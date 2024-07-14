@@ -9,4 +9,13 @@ project ("Ai")
 
 add_executable (Ai "main.cpp")
 
+target_include_directories(Ai PUBLIC
+                          "${PROJECT_BINARY_DIR}"
+                          "${PROJECT_SOURCE_DIR}/Include"
+                          )
+
+target_link_directories(Ai PRIVATE
+						"${PROJECT_SOURCE_DIR}/Libs"
+						)
+
 add_subdirectory("SayHello")
