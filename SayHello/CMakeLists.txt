@@ -9,7 +9,7 @@ target_link_directories(SayHello PRIVATE
 						)
 
 target_link_libraries(SayHello PRIVATE 
-					  glfw3.lib
-					  glad.lib
+					  glfw
+					  glad
 					  opengl32.lib
 					  )
