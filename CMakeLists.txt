@@ -5,6 +5,9 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("Ai")
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 #Config glfw
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
@@ -12,13 +15,16 @@ option(GLFW_BUILD_TESTS OFF)
 add_subdirectory(3rd_party/glfw)
 include_directories(3rd_party/glfw/include)
 LIST(APPEND LIBS glfw ${GLFW_LIBRARIES})
-
 #Config glad
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
+#2DCanvas include
+include_directories("${PROJECT_SOURCE_DIR}/2DCanvas/include")
+#AiCore
+include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
 
 
 # 将源代码添加到此项目的可执行文件。
-add_executable (Ai "main.cpp")
+add_executable (Ai "main.cpp" "AiCOre/src/AiCore.cpp")
 
 target_include_directories(Ai PUBLIC
                           "${PROJECT_BINARY_DIR}"
@@ -29,5 +35,14 @@ target_link_directories(Ai PRIVATE
 						"${PROJECT_SOURCE_DIR}/Libs"
 						)
 
-add_subdirectory("SayHello")
 add_subdirectory("3rd_party/glad")
+add_subdirectory("SayHello")
+add_subdirectory("2DCanvas")
+add_subdirectory("AiCore")
+
+target_link_libraries(Ai PRIVATE 
+					  glfw
+					  glad
+					  opengl32.lib
+					  AiCore
+					  )
