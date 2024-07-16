@@ -17,8 +17,6 @@ include_directories(3rd_party/glfw/include)
 LIST(APPEND LIBS glfw ${GLFW_LIBRARIES})
 #Config glad
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
-#2DCanvas include
-include_directories("${PROJECT_SOURCE_DIR}/2DCanvas/include")
 #AiCore
 include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
 
@@ -37,7 +35,6 @@ target_link_directories(Ai PRIVATE
 
 add_subdirectory("3rd_party/glad")
 add_subdirectory("SayHello")
-add_subdirectory("2DCanvas")
 add_subdirectory("AiCore")
 
 target_link_libraries(Ai PRIVATE 

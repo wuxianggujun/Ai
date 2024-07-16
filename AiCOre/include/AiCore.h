@@ -5,26 +5,22 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <memory>
 
 #include <vector>
 #include <map>
 #include <string>
 
+#include <painter.h>
+
 namespace Ai {
-	enum class ObjectType : unsigned int {
-		TRIANGLE,
-		SQUARE
-	};
-
-	void glfwWindowInit();
-
 	void renderAiInit();
 
 	void renderAi();
 
-	void addShader();
+	void addCanvasShader();
 
-	void addObject(ObjectType type);
+	void addTriangle(float xscale, float yscale, float xpos, float ypos);
 
 	void addTriangle();
 }

@@ -3,10 +3,13 @@
 namespace Ai {
     GLFWwindow* window;
 
-    struct RenderObject {
+    struct PainterObject {
         unsigned int VAO;
         unsigned int VBO;
     };
+
+    PainterObject g_triangle;
+    PainterObject g_square;
 
     float triangleVertices[9] = {
          0.0f, 0.1f, 1.0f,
@@ -14,12 +17,11 @@ namespace Ai {
         -0.1f,-0.1f, 1.0f
     };
 
-    std::vector<RenderObject> RenderObjectVector;
+    std::vector<std::unique_ptr<Painter>> RenderObjectVector;
 
     std::map<std::string, unsigned int> ShaderMap;
 
-    void glfwWindowInit()
-    {
+    void renderAiInit() {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -40,11 +42,21 @@ namespace Ai {
             std::cout << "Failed to initialize GLAD" << std::endl;
             exit(1);
         }
-    }
 
-    void renderAiInit() {
-        glfwWindowInit();
-        addShader();
+        unsigned int VBO, VAO;
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        g_triangle.VAO = VAO;
+        g_triangle.VBO = VBO;
+
+        addCanvasShader();
     }
 
     void renderAi()
@@ -54,17 +66,28 @@ namespace Ai {
             if (RenderObjectVector.size() != 0) {
                 glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT);
-                glUseProgram(ShaderMap["shader"]);
-                glBindVertexArray(RenderObjectVector[0].VAO);
+                glUseProgram(ShaderMap["Canvas"]);
 
-                int vertexOffsetLocation = glGetUniformLocation(ShaderMap["shader"], "offset");
-                glUniform2f(vertexOffsetLocation, 0.0f, 0.0f);
-                int vertexScaleLocation = glGetUniformLocation(ShaderMap["shader"], "scale");
-                glUniform2f(vertexScaleLocation, 0.25f, 0.25f);
-                int vertexColorLocation = glGetUniformLocation(ShaderMap["shader"], "ourColor");
-                glUniform4f(vertexColorLocation, 0.0f, 1.0f, 0.0f, 1.0f);
-                glDrawArrays(GL_TRIANGLES, 0, 3);
+                int vertexScaleLocation;
+                int vertexPosLocation;
+                int vertexColorLocation;
 
+                for (int i = 0; i < RenderObjectVector.size(); i++) {
+                    switch (RenderObjectVector[i]->getObjectType()) {
+                        case ObjectType::TRIANGLE:
+                            glBindVertexArray(g_triangle.VAO);
+                            vertexScaleLocation = glGetUniformLocation(ShaderMap["Canvas"], "scale");
+                            std::pair<float, float> scale = RenderObjectVector[i]->getScale();
+                            glUniform2f(vertexScaleLocation, scale.first, scale.second);
+                            std::pair<float, float> pos = RenderObjectVector[i]->getPosition();
+                            vertexPosLocation = glGetUniformLocation(ShaderMap["Canvas"], "pos");
+                            glUniform2f(vertexPosLocation, pos.first, pos.second);
+                            vertexColorLocation = glGetUniformLocation(ShaderMap["Canvas"], "ourColor");
+                            glUniform4f(vertexColorLocation, 0.0f, 1.0f, 0.0f, 1.0f);
+                            glDrawArrays(GL_TRIANGLES, 0, 3);
+                            break;
+                    }
+                }
                 glfwSwapBuffers(window);
                 glfwPollEvents();
             }
@@ -75,15 +98,15 @@ namespace Ai {
         }
     }
 
-    void addShader()
+    void addCanvasShader()
 	{
         const char* vertexShaderSource = "#version 330 core\n"
             "layout (location = 0) in vec3 aPos;\n"
-            "uniform vec2 offset;\n"
+            "uniform vec2 pos;\n"
             "uniform vec2 scale;\n"
             "void main()\n"
             "{\n"
-            "   gl_Position = vec4(aPos.x * scale.x, aPos.y * scale.y, aPos.z, 1.0) + vec4(offset, 0.0, 0.0);\n"
+            "   gl_Position = vec4(aPos.x * scale.x, aPos.y * scale.y, aPos.z, 1.0) + vec4(pos, 0.0, 0.0);\n"
             "}\0";
         const char* fragmentShaderSource = "#version 330 core\n"
             "out vec4 FragColor;\n"
@@ -125,31 +148,10 @@ namespace Ai {
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
 
-        ShaderMap["shader"] = shaderProgram;
+        ShaderMap["Canvas"] = shaderProgram;
 	}
 
-	void addObject(ObjectType type)
-	{
-		switch (type) {
-		case ObjectType::TRIANGLE:
-			addTriangle();
-			break;
-		}
-	}
-
-	void addTriangle()
-	{
-        unsigned int VBO = 0, VAO;
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        RenderObject robj = { VAO, VBO };
-        RenderObjectVector.push_back(robj);
-	}
+    void addTriangle(float xscale, float yscale, float xpos, float ypos) {
+        RenderObjectVector.push_back(std::make_unique<Triangle>(xscale, yscale, xpos, ypos));
+    }
 }
