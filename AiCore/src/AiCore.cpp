@@ -17,6 +17,16 @@ namespace Ai {
         -0.1f,-0.1f, 1.0f
     };
 
+    float squareVertices[18] = {
+        -0.1f, 0.1f, 1.0f,
+         0.1f, 0.1f, 1.0f,
+         0.1f,-0.1f, 1.0f,
+
+        -0.1f, 0.1f, 1.0f,
+        -0.1f,-0.1f, 1.0f,
+         0.1f,-0.1f, 1.0f,
+    };
+
     // ObjectVector
     std::vector<std::unique_ptr<Painter>> RenderObjectVector;
 
@@ -28,7 +38,7 @@ namespace Ai {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(1000, 1000, "HelloWindow~", NULL, NULL);
+        window = glfwCreateWindow(1000, 800, "HelloWindow~", NULL, NULL);
         if (window == NULL)
         {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -57,6 +67,18 @@ namespace Ai {
         g_triangle.VAO = VAO;
         g_triangle.VBO = VBO;
 
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(squareVertices), squareVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        g_square.VAO = VAO;
+        g_square.VBO = VBO;
+
         addCanvasShader();
     }
 
@@ -74,18 +96,36 @@ namespace Ai {
                 int vertexColorLocation;
 
                 for (int i = 0; i < RenderObjectVector.size(); i++) {
+                    std::pair<float, float> scale;
+                    std::pair<float, float> pos;
+                    std::tuple<float, float, float> color;
                     switch (RenderObjectVector[i]->getObjectType()) {
+
                         case ObjectType::TRIANGLE:
                             glBindVertexArray(g_triangle.VAO);
                             vertexScaleLocation = glGetUniformLocation(ShaderMap["Canvas"], "scale");
-                            std::pair<float, float> scale = RenderObjectVector[i]->getScale();
+                            scale = RenderObjectVector[i]->getScale();
                             glUniform2f(vertexScaleLocation, scale.first, scale.second);
-                            std::pair<float, float> pos = RenderObjectVector[i]->getPosition();
+                            pos = RenderObjectVector[i]->getPosition();
                             vertexPosLocation = glGetUniformLocation(ShaderMap["Canvas"], "pos");
                             glUniform2f(vertexPosLocation, pos.first, pos.second);
+                            color = RenderObjectVector[i]->getColor();
                             vertexColorLocation = glGetUniformLocation(ShaderMap["Canvas"], "ourColor");
-                            glUniform4f(vertexColorLocation, 0.0f, 1.0f, 0.0f, 1.0f);
+                            glUniform4f(vertexColorLocation, std::get<0>(color), std::get<1>(color), std::get<2>(color), 1.0f);
                             glDrawArrays(GL_TRIANGLES, 0, 3);
+                            break;
+                        case ObjectType::SQUARE:
+                            glBindVertexArray(g_square.VAO);
+                            vertexScaleLocation = glGetUniformLocation(ShaderMap["Canvas"], "scale");
+                            scale = RenderObjectVector[i]->getScale();
+                            glUniform2f(vertexScaleLocation, scale.first, scale.second);
+                            pos = RenderObjectVector[i]->getPosition();
+                            vertexPosLocation = glGetUniformLocation(ShaderMap["Canvas"], "pos");
+                            glUniform2f(vertexPosLocation, pos.first, pos.second);
+                            color = RenderObjectVector[i]->getColor();
+                            vertexColorLocation = glGetUniformLocation(ShaderMap["Canvas"], "ourColor");
+                            glUniform4f(vertexColorLocation, std::get<0>(color), std::get<1>(color), std::get<2>(color), 1.0f);
+                            glDrawArrays(GL_TRIANGLES, 0, 6);
                             break;
                     }
                 }
@@ -154,5 +194,17 @@ namespace Ai {
 
     void addTriangle(float xscale, float yscale, float xpos, float ypos) {
         RenderObjectVector.push_back(std::make_unique<Triangle>(xscale, yscale, xpos, ypos));
+    }
+
+    void addTriangle(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
+        RenderObjectVector.push_back(std::make_unique<Triangle>(xscale, yscale, xpos, ypos, red, green, blue));
+    }
+
+    void addSquare(float xscale, float yscale, float xpos, float ypos) {
+        RenderObjectVector.push_back(std::make_unique<Square>(xscale, yscale, xpos, ypos));
+    }
+
+    void addSquare(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
+        RenderObjectVector.push_back(std::make_unique<Square>(xscale, yscale, xpos, ypos, red, green, blue));
     }
 }

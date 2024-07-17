@@ -3,6 +3,7 @@
 #define PAINTER_H
 
 #include <utility>
+#include <tuple>
 
 namespace Ai {
 	enum class ObjectType : unsigned int {
@@ -14,12 +15,17 @@ namespace Ai {
 	private:
 		std::pair<float, float> scale;
 		std::pair<float, float> pos;
+		std::tuple<float, float, float> color;
 	public:
 		Painter(float xscale, float yscale, float xpos, float ypos) 
-		: scale(xscale, yscale), pos(xpos, ypos) {}
+		: scale(xscale, yscale), pos(xpos, ypos), color(1.0f, 1.0f, 1.0f) {}
 
-		virtual std::pair<float, float> getScale();
-		virtual std::pair<float, float> getPosition();
+		Painter(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue)
+			: scale(xscale, yscale), pos(xpos, ypos), color(red, green, blue) {}
+
+		virtual std::pair<float, float>& getScale();
+		virtual std::pair<float, float>& getPosition();
+		virtual std::tuple<float, float, float>& getColor();
 		virtual ObjectType getObjectType() = 0;
 	};
 
@@ -28,6 +34,9 @@ namespace Ai {
 		Triangle(float xscale, float yscale, float xpos, float ypos)
 		: Painter(xscale, yscale, xpos, ypos){}
 
+		Triangle(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue)
+			: Painter(xscale, yscale, xpos, ypos, red, green, blue) {}
+
 		virtual ObjectType getObjectType() override;
 	};
 
@@ -35,6 +44,9 @@ namespace Ai {
 	public:
 		Square(float xscale, float yscale, float xpos, float ypos)
 		: Painter(xscale, yscale, xpos, ypos) {}
+
+		Square(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue)
+			: Painter(xscale, yscale, xpos, ypos, red, green, blue) {}
 
 		virtual ObjectType getObjectType() override;
 	};

@@ -22,8 +22,10 @@ namespace Ai {
 	void addCanvasShader();
 
 	void addTriangle(float xscale, float yscale, float xpos, float ypos);
+	void addTriangle(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
 
-	void addTriangle();
+	void addSquare(float xscale, float yscale, float xpos, float ypos);
+	void addSquare(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
 }
 
 #endif
