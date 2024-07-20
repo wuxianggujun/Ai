@@ -16,16 +16,20 @@
 namespace Ai {
 	void renderAiInit();
 
-	// Render loop.
 	void renderAi();
 
+	void addLineShader();
 	void addCanvasShader();
 
-	void addTriangle(float xscale, float yscale, float xpos, float ypos);
-	void addTriangle(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
+	void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY);
+	void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY, 
+		float red, float green, float blue);
 
-	void addSquare(float xscale, float yscale, float xpos, float ypos);
-	void addSquare(float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
+	void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos);
+	void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
+
+	void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos);
+	void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
 }
 
 #endif
