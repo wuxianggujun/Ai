@@ -1,4 +1,4 @@
-add_library(AiCore "src/AiCore.cpp" "src/painter.cpp")
+add_library(AiCore "src/AiCore.cpp" "src/Painter.cpp"  )
 
 # ...
 target_link_libraries(AiCore PRIVATE 

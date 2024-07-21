@@ -52,4 +52,12 @@ namespace Ai {
 	unsigned int Square::getId() {
 		return m_id;
 	}
+
+	ObjectType Circle::getObjectType() {
+		return ObjectType::CIRCLE;
+	}
+
+	unsigned int Circle::getId() {
+		return m_id;
+	}
 }

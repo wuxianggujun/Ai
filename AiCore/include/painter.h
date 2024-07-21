@@ -9,7 +9,8 @@ namespace Ai {
 	enum class ObjectType : unsigned int {
 		LINE,
 		TRIANGLE,
-		SQUARE
+		SQUARE,
+		CIRCLE
 	};
 
 	class Painter {
@@ -81,6 +82,19 @@ namespace Ai {
 		: Polygon(id, xscale, yscale, xpos, ypos) {}
 
 		Square(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue)
+			: Polygon(id, xscale, yscale, xpos, ypos, red, green, blue) {}
+
+		virtual ObjectType getObjectType() override;
+
+		virtual unsigned int getId() override;
+	};
+
+	class Circle : public Polygon {
+	public:
+		Circle(unsigned int id, float xscale, float yscale, float xpos, float ypos)
+			: Polygon(id, xscale, yscale, xpos, ypos) {}
+
+		Circle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue)
 			: Polygon(id, xscale, yscale, xpos, ypos, red, green, blue) {}
 
 		virtual ObjectType getObjectType() override;

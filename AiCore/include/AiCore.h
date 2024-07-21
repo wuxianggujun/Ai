@@ -6,11 +6,11 @@
 
 #include <iostream>
 #include <memory>
+#include <cmath>
 
 #include <vector>
 #include <map>
 #include <string>
-
 #include <painter.h>
 
 namespace Ai {
@@ -19,7 +19,7 @@ namespace Ai {
 	void renderAi();
 
 	void addLineShader();
-	void addCanvasShader();
+	void addPolygonShader();
 
 	void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY);
 	void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY, 
@@ -30,6 +30,9 @@ namespace Ai {
 
 	void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos);
 	void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
+
+	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos);
+	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
 }
 
 #endif
