@@ -11,7 +11,8 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <painter.h>
+
+#include <Painter.h>
 
 namespace Ai {
 	void renderAiInit();
@@ -34,5 +35,4 @@ namespace Ai {
 	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos);
 	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
 }
-
 #endif

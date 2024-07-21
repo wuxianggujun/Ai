@@ -20,9 +20,12 @@ include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
 #AiCore
 include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
 
+set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+set(TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+file(COPY ${SOURCE_DIR} DESTINATION ${TARGET_DIR})
 
 # 将源代码添加到此项目的可执行文件。
-add_executable (Ai "main.cpp" "AiCOre/src/AiCore.cpp")
+add_executable (Ai "main.cpp" "AiCore/src/AiCore.cpp")
 
 target_include_directories(Ai PUBLIC
                           "${PROJECT_BINARY_DIR}"

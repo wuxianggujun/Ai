@@ -380,3 +380,4 @@ namespace Ai {
         RenderObjectVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 }
+

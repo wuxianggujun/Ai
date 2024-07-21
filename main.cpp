@@ -1,9 +1,9 @@
 #include <iostream>
 #include <AiCore.h>
+#include <Shader.h>
 
 int main() {
 	Ai::renderAiInit();
-
 	// TODO::Replace with template.
 	Ai::addTriangle(0, 0.5f, 0.5f, 0.25f, 0.25f);
 	Ai::addTriangle(1, 0.25f, 0.25f, 0.5f, 0.5f);
@@ -17,4 +17,5 @@ int main() {
 
 	std::cout << "Waiting...Waiting..." << std::endl;
 	std::cout << "Here has a window now..." << std::endl;
+	Shader myShader("resources/shaders/test.vs", "resources/shaders/test.fs");
 }
