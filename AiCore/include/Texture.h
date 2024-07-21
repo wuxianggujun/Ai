@@ -1,0 +1,55 @@
+#pragma once
+#ifndef TEXTURE_H
+#define TEXTURE_H
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#include <glad/glad.h>
+#include <cstring> 
+#include <string>
+
+class Texture2D {
+private:
+	unsigned int m_textureId;
+	int m_warpS = GL_REPEAT;
+	int m_warpT = GL_REPEAT;
+	int m_minFilter = GL_LINEAR;
+	int m_magFilter = GL_LINEAR;
+
+	std::string m_imgPath;
+	int m_width;
+	int m_height;
+	int m_channels;
+
+public:
+	Texture2D(std::string imgPath) {
+		glGenTextures(1, &m_textureId);
+		glBindTexture(GL_TEXTURE_2D, m_textureId);
+		
+		// Set wrapping and filtering methods.
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_warpS);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_warpT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_minFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_magFilter);
+	
+		m_imgPath = imgPath;
+		unsigned char* data = stbi_load(m_imgPath.c_str(), &m_width, &m_height, &m_channels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else
+		{
+			std::cout << "Failed to load texture" << std::endl;
+		}
+		stbi_image_free(data);
+	}
+
+	~Texture2D() {
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDeleteTextures(1, &m_textureId);
+	}
+};
+
+#endif
