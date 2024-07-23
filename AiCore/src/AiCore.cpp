@@ -1,5 +1,8 @@
 #include <AiCore.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace Ai {
     GLFWwindow* window;
 
@@ -64,7 +67,10 @@ namespace Ai {
         circleElementVertices[359 * 3 + 2] = 1;
     }
 
-    std::vector<std::shared_ptr<Painter>> RenderObjectVector;
+    std::vector<std::shared_ptr<Painter>> RenderPainterVector;
+    std::vector<std::shared_ptr<AiObject>> RenderObjectVector;
+
+    //std::vector<std::shared_ptr<Painter>> Render
 
     std::map<std::string, unsigned int> ShaderMap;
 
@@ -141,28 +147,33 @@ namespace Ai {
     {
         while (!glfwWindowShouldClose(window))
         {
-            if (RenderObjectVector.size() != 0) {
+            if (RenderPainterVector.size() != 0) {
                 glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 int vertexScaleLocation;
                 int vertexPosLocation;
                 int vertexColorLocation;
-
+                glEnable(GL_DEPTH_TEST);
                 for (int i = 0; i < RenderObjectVector.size(); i++) {
+                    RenderObjectVector[i]->draw();
+                }
+
+                glDisable(GL_DEPTH_TEST);
+                for (int i = 0; i < RenderPainterVector.size(); i++) {
                     std::pair<float, float> point;
                     std::pair<float, float> scale;
                     std::pair<float, float> pos;
                     std::tuple<float, float, float> color;
 
-                    switch (RenderObjectVector[i]->getObjectType()) {
+                    switch (RenderPainterVector[i]->getObjectType()) {
                     case ObjectType::LINE:
                         glUseProgram(ShaderMap["Line"]);
                         glLineWidth(1.0f);
-                        point = std::dynamic_pointer_cast<Line>(RenderObjectVector[i])->getStartPoint();
+                        point = std::dynamic_pointer_cast<Line>(RenderPainterVector[i])->getStartPoint();
                         lineVertices[0] = point.first;
                         lineVertices[1] = point.second;
-                        point = std::dynamic_pointer_cast<Line>(RenderObjectVector[i])->getEndPoint();
+                        point = std::dynamic_pointer_cast<Line>(RenderPainterVector[i])->getEndPoint();
                         lineVertices[3] = point.first;
                         lineVertices[4] = point.second;
                         glGenVertexArrays(1, &g_line.VAO);
@@ -172,7 +183,7 @@ namespace Ai {
                         glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
                         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
                         glEnableVertexAttribArray(0);
-                        color = std::dynamic_pointer_cast<Line>(RenderObjectVector[i])->getColor();
+                        color = std::dynamic_pointer_cast<Line>(RenderPainterVector[i])->getColor();
                         vertexColorLocation = glGetUniformLocation(ShaderMap["Line"], "ourColor");
                         glUniform4f(vertexColorLocation, std::get<0>(color), std::get<1>(color), std::get<2>(color), 1.0f);
                         glDrawArrays(GL_LINES, 0, 2);
@@ -185,12 +196,12 @@ namespace Ai {
                         glUseProgram(ShaderMap["Polygon"]);
                         glBindVertexArray(g_triangle.VAO);
                         vertexScaleLocation = glGetUniformLocation(ShaderMap["Polygon"], "scale");
-                        scale = std::dynamic_pointer_cast<Triangle>(RenderObjectVector[i])->getScale();
+                        scale = std::dynamic_pointer_cast<Triangle>(RenderPainterVector[i])->getScale();
                         glUniform2f(vertexScaleLocation, scale.first, scale.second * WH_Ratio);
-                        pos = std::dynamic_pointer_cast<Triangle>(RenderObjectVector[i])->getPosition();
+                        pos = std::dynamic_pointer_cast<Triangle>(RenderPainterVector[i])->getPosition();
                         vertexPosLocation = glGetUniformLocation(ShaderMap["Polygon"], "pos");
                         glUniform2f(vertexPosLocation, pos.first, pos.second);
-                        color = std::dynamic_pointer_cast<Triangle>(RenderObjectVector[i])->getColor();
+                        color = std::dynamic_pointer_cast<Triangle>(RenderPainterVector[i])->getColor();
                         vertexColorLocation = glGetUniformLocation(ShaderMap["Polygon"], "ourColor");
                         glUniform4f(vertexColorLocation, std::get<0>(color), std::get<1>(color), std::get<2>(color), 1.0f);
                         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -199,12 +210,12 @@ namespace Ai {
                         glUseProgram(ShaderMap["Polygon"]);
                         glBindVertexArray(g_square.VAO);
                         vertexScaleLocation = glGetUniformLocation(ShaderMap["Polygon"], "scale");
-                        scale = std::dynamic_pointer_cast<Square>(RenderObjectVector[i])->getScale();
+                        scale = std::dynamic_pointer_cast<Square>(RenderPainterVector[i])->getScale();
                         glUniform2f(vertexScaleLocation, scale.first, scale.second * WH_Ratio);
-                        pos = std::dynamic_pointer_cast<Square>(RenderObjectVector[i])->getPosition();
+                        pos = std::dynamic_pointer_cast<Square>(RenderPainterVector[i])->getPosition();
                         vertexPosLocation = glGetUniformLocation(ShaderMap["Polygon"], "pos");
                         glUniform2f(vertexPosLocation, pos.first, pos.second);
-                        color = std::dynamic_pointer_cast<Square>(RenderObjectVector[i])->getColor();
+                        color = std::dynamic_pointer_cast<Square>(RenderPainterVector[i])->getColor();
                         vertexColorLocation = glGetUniformLocation(ShaderMap["Polygon"], "ourColor");
                         glUniform4f(vertexColorLocation, std::get<0>(color), std::get<1>(color), std::get<2>(color), 1.0f);
                         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -213,18 +224,19 @@ namespace Ai {
                         glUseProgram(ShaderMap["Polygon"]);
                         glBindVertexArray(g_circle.VAO);
                         vertexScaleLocation = glGetUniformLocation(ShaderMap["Polygon"], "scale");
-                        scale = std::dynamic_pointer_cast<Circle>(RenderObjectVector[i])->getScale();
+                        scale = std::dynamic_pointer_cast<Circle>(RenderPainterVector[i])->getScale();
                         glUniform2f(vertexScaleLocation, scale.first, scale.second * WH_Ratio);
-                        pos = std::dynamic_pointer_cast<Circle>(RenderObjectVector[i])->getPosition();
+                        pos = std::dynamic_pointer_cast<Circle>(RenderPainterVector[i])->getPosition();
                         vertexPosLocation = glGetUniformLocation(ShaderMap["Polygon"], "pos");
                         glUniform2f(vertexPosLocation, pos.first, pos.second);
-                        color = std::dynamic_pointer_cast<Circle>(RenderObjectVector[i])->getColor();
+                        color = std::dynamic_pointer_cast<Circle>(RenderPainterVector[i])->getColor();
                         vertexColorLocation = glGetUniformLocation(ShaderMap["Polygon"], "ourColor");
                         glUniform4f(vertexColorLocation, std::get<0>(color), std::get<1>(color), std::get<2>(color), 1.0f);
                         glDrawElements(GL_TRIANGLES, 360 * 3, GL_UNSIGNED_INT, 0);
                         break;
                     }
                 }
+                
                 glfwSwapBuffers(window);
                 glfwPollEvents();
             }
@@ -348,36 +360,40 @@ namespace Ai {
 	}
 
     void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY) {
-        RenderObjectVector.push_back(std::make_shared<Line>(id, startPointX, startPointY, endPointX, endPointY));
+        RenderPainterVector.push_back(std::make_shared<Line>(id, startPointX, startPointY, endPointX, endPointY));
     }
 
     void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY,
         float red, float green, float blue) {
-        RenderObjectVector.push_back(std::make_shared<Line>(id, startPointX, startPointY, endPointX, endPointY, red, green, blue));
+        RenderPainterVector.push_back(std::make_shared<Line>(id, startPointX, startPointY, endPointX, endPointY, red, green, blue));
     }
 
     void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos) {
-        RenderObjectVector.push_back(std::make_shared<Triangle>(id, xscale, yscale, xpos, ypos));
+        RenderPainterVector.push_back(std::make_shared<Triangle>(id, xscale, yscale, xpos, ypos));
     }
 
     void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
-        RenderObjectVector.push_back(std::make_shared<Triangle>(id, xscale, yscale, xpos, ypos, red, green, blue));
+        RenderPainterVector.push_back(std::make_shared<Triangle>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 
     void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos) {
-        RenderObjectVector.push_back(std::make_shared<Square>(id, xscale, yscale, xpos, ypos));
+        RenderPainterVector.push_back(std::make_shared<Square>(id, xscale, yscale, xpos, ypos));
     }
 
     void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
-        RenderObjectVector.push_back(std::make_shared<Square>(id, xscale, yscale, xpos, ypos, red, green, blue));
+        RenderPainterVector.push_back(std::make_shared<Square>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 
     void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos) {
-        RenderObjectVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos));
+        RenderPainterVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos));
     }
 
     void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
-        RenderObjectVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos, red, green, blue));
+        RenderPainterVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos, red, green, blue));
+    }
+
+    void addTex(unsigned int id, std::string name, std::string imgPath) {
+        RenderObjectVector.push_back(std::make_shared<AiTexQuadObject>(id, name, imgPath));
     }
 }
 

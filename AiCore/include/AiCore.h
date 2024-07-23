@@ -13,6 +13,7 @@
 #include <string>
 
 #include <Painter.h>
+#include <Object.h>
 
 namespace Ai {
 	void renderAiInit();
@@ -34,5 +35,7 @@ namespace Ai {
 
 	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos);
 	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
+
+	void addTex(unsigned int id, std::string name, std::string imgPath);
 }
 #endif

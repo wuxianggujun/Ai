@@ -2,11 +2,11 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include <glad/glad.h>
 #include <cstring> 
 #include <string>
+#include <iostream>
 
 class Texture2D {
 private:
@@ -33,6 +33,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_magFilter);
 	
 		m_imgPath = imgPath;
+		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(m_imgPath.c_str(), &m_width, &m_height, &m_channels, 0);
 		if (data)
 		{
@@ -44,6 +45,10 @@ public:
 			std::cout << "Failed to load texture" << std::endl;
 		}
 		stbi_image_free(data);
+	}
+
+	void bind() {
+		glBindTexture(GL_TEXTURE_2D, m_textureId);
 	}
 
 	~Texture2D() {
