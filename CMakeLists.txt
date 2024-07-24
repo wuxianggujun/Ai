@@ -8,6 +8,8 @@ project ("Ai")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+#AiCore
+include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
 #Config glfw
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
@@ -17,8 +19,8 @@ include_directories(3rd_party/glfw/include)
 LIST(APPEND LIBS glfw ${GLFW_LIBRARIES})
 #Config glad
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
-#AiCore
-include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
+#Config glm
+include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glm")
 
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}")

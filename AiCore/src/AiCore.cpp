@@ -147,10 +147,9 @@ namespace Ai {
     {
         while (!glfwWindowShouldClose(window))
         {
-            if (RenderPainterVector.size() != 0) {
-                glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            if (RenderPainterVector.size() != 0 || RenderObjectVector.size() != 0) {
                 int vertexScaleLocation;
                 int vertexPosLocation;
                 int vertexColorLocation;
@@ -240,10 +239,9 @@ namespace Ai {
                 glfwSwapBuffers(window);
                 glfwPollEvents();
             }
-            else {
-                std::cout << "Nothing to rendering~" << std::endl;
-                break;
-            }
+            //else {
+            //    std::cout << "Nothing to rendering~" << std::endl;
+            //}
         }
         glDeleteVertexArrays(1, &g_triangle.VAO);
         glDeleteBuffers(1, &g_triangle.VBO);
@@ -392,8 +390,10 @@ namespace Ai {
         RenderPainterVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 
-    void addTex(unsigned int id, std::string name, std::string imgPath) {
-        RenderObjectVector.push_back(std::make_shared<AiTexQuadObject>(id, name, imgPath));
+    std::shared_ptr<AiTexQuadObject> addTex(unsigned int id, std::string name, std::string imgPath) {
+        std::shared_ptr<AiTexQuadObject> sp = std::make_shared<AiTexQuadObject>(id, name, imgPath);
+        RenderObjectVector.push_back(sp);
+        return sp;
     }
 }
 

@@ -9,8 +9,16 @@ namespace Ai {
 		return m_objectName;
 	}
 
-	void  AiObject::draw() {
+	glm::vec3& AiObject::getTranslate() {
+		return m_translate;
+	}
 
+	glm::vec3& AiObject::getRotate() {
+		return m_rotate;
+	}
+
+	glm::vec3& AiObject::getScale() {
+		return m_scale;
 	}
 
 	AiTexQuadObject::AiTexQuadObject(unsigned int id, std::string name, std::string imgPath) 
@@ -47,6 +55,19 @@ namespace Ai {
 		m_texture->bind();
 		// Use shader.
 		glUseProgram(m_shaderID);
+
+		//----------------------------------------------------------------------------------------------------
+		// ::Beta Code
+		glm::mat4 trans(1.0f);
+		trans = glm::rotate(trans, glm::radians(m_rotate.x), glm::vec3(1.0, 0.0, 0.0));
+		trans = glm::rotate(trans, glm::radians(m_rotate.y), glm::vec3(0.0, 1.0, 0.0));
+		trans = glm::rotate(trans, glm::radians(m_rotate.z), glm::vec3(0.0, 0.0, 1.0));
+		trans = glm::scale(trans, m_scale);
+		trans = glm::translate(trans, m_translate);
+		unsigned int transformLoc = glGetUniformLocation(m_shaderID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		//----------------------------------------------------------------------------------------------------
+		
 		// Bind m_VAO.
 		glBindVertexArray(m_VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
