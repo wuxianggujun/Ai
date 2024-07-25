@@ -10,6 +10,7 @@
 
 #include <Texture.h>
 #include <Shader.h>
+#include <Camera.h>
 
 namespace Ai {
 	class AiObject {
@@ -20,6 +21,9 @@ namespace Ai {
 		glm::vec3 m_translate;
 		glm::vec3 m_rotate;
 		glm::vec3 m_scale;
+
+		glm::mat4 m_view;
+		glm::mat4 m_projection;
 	public:
 		AiObject() = delete;
 
@@ -44,6 +48,10 @@ namespace Ai {
 		virtual glm::vec3& getRotate();
 		
 		virtual glm::vec3& getScale();
+
+		virtual glm::mat4& getView();
+
+		virtual glm::mat4& getProjection();
 	};
 
 	class AiTexQuadObject : public AiObject {
@@ -66,7 +74,7 @@ namespace Ai {
 
 		virtual void draw() override;
 
-		virtual ~AiTexQuadObject(){}
+		virtual ~AiTexQuadObject();
 	private:
 		unsigned int initShader();
 	public:
@@ -86,11 +94,14 @@ namespace Ai {
 		static constexpr char* vertexShaderCode = "#version 330 core\n"
 			"layout (location = 0) in vec3 aPos;\n"
 			"layout (location = 1) in vec2 aTex;\n"
-			"uniform mat4 transform;\n"
+			"uniform mat4 model;\n"
+			"uniform mat4 view;\n"
+			"uniform mat4 projection;\n"
 			"out vec2 TexCoord;\n"
 			"void main()\n"
 			"{\n"
-			"   gl_Position = transform * vec4(aPos, 1.0);\n"
+			"   gl_Position = projection * view * model *  vec4(aPos, 1.0);\n"
+			//"   gl_Position = view * model *  vec4(aPos, 1.0);\n"
 			"   TexCoord = aTex;\n"
 			"}\0";
 		static constexpr char* fragmentShaderCode = "#version 330 core\n"

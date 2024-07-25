@@ -21,6 +21,16 @@ namespace Ai {
 		return m_scale;
 	}
 
+	glm::mat4& AiObject::getView()
+	{
+		return m_view;
+	}
+
+	glm::mat4& AiObject::getProjection()
+	{
+		return m_projection;
+	}
+
 	AiTexQuadObject::AiTexQuadObject(unsigned int id, std::string name, std::string imgPath) 
         : AiObject(id, name), m_imgPath(imgPath)
     {
@@ -58,14 +68,18 @@ namespace Ai {
 
 		//----------------------------------------------------------------------------------------------------
 		// ::Beta Code
-		glm::mat4 trans(1.0f);
-		trans = glm::rotate(trans, glm::radians(m_rotate.x), glm::vec3(1.0, 0.0, 0.0));
-		trans = glm::rotate(trans, glm::radians(m_rotate.y), glm::vec3(0.0, 1.0, 0.0));
-		trans = glm::rotate(trans, glm::radians(m_rotate.z), glm::vec3(0.0, 0.0, 1.0));
-		trans = glm::scale(trans, m_scale);
-		trans = glm::translate(trans, m_translate);
-		unsigned int transformLoc = glGetUniformLocation(m_shaderID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		glm::mat4 model(1.0f);
+		model = glm::rotate(model, glm::radians(m_rotate.x), glm::vec3(1.0, 0.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.y), glm::vec3(0.0, 1.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.z), glm::vec3(0.0, 0.0, 1.0));
+		model = glm::scale(model, m_scale);
+		model = glm::translate(model, m_translate);
+		unsigned int modelLoc = glGetUniformLocation(m_shaderID, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		unsigned int viewLoc = glGetUniformLocation(m_shaderID, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(m_view));
+		unsigned int projectionLoc = glGetUniformLocation(m_shaderID, "projection");
+		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(m_projection));
 		//----------------------------------------------------------------------------------------------------
 		
 		// Bind m_VAO.
@@ -109,4 +123,10 @@ namespace Ai {
 
 		return shaderProgram;
     }
+
+	AiTexQuadObject::~AiTexQuadObject() {
+		glDeleteVertexArrays(1, &m_VAO);
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_EBO);
+	}
 }

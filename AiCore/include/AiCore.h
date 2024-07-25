@@ -14,6 +14,11 @@
 
 #include <Painter.h>
 #include <Object.h>
+#include <Camera.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Ai {
 	void renderAiInit();
@@ -38,5 +43,11 @@ namespace Ai {
 
 	// TODO::Improve the return value type.
 	std::shared_ptr<AiTexQuadObject> addTex(unsigned int id, std::string name, std::string imgPath);
+
+	void processInput(GLFWwindow* window);
+
+	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
+	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 }
 #endif

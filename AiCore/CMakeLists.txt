@@ -1,4 +1,4 @@
-add_library(AiCore "src/AiCore.cpp" "src/Painter.cpp"    "include/Shader.h" "include/Texture.h"   "include/Object.h" "src/Object.cpp")
+add_library(AiCore "src/AiCore.cpp" "src/Painter.cpp"    "include/Shader.h" "include/Texture.h"   "include/Object.h" "src/Object.cpp" "include/Camera.h")
 
 # ...
 target_link_libraries(AiCore PRIVATE 

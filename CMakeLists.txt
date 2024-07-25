@@ -21,6 +21,8 @@ LIST(APPEND LIBS glfw ${GLFW_LIBRARIES})
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
 #Config glm
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glm")
+#Config stb_image
+include_directories("${PROJECT_SOURCE_DIR}/3rd_party/stb")
 
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}")
