@@ -11,9 +11,12 @@
 #include <Texture.h>
 #include <Shader.h>
 #include <Camera.h>
+#include <iostream>
 
-namespace Ai {
-	class AiObject {
+namespace Ai 
+{
+	class AiObject 
+	{
 	private:
 		unsigned int m_objectId;
 		std::string m_objectName;
@@ -33,9 +36,14 @@ namespace Ai {
 			m_translate(0.0f),
 			m_rotate(0.0f),
 			m_scale(1.0f)
-		{}
+		{
 
-		virtual ~AiObject() {}
+		}
+
+		virtual ~AiObject() 
+		{
+
+		}
 
 		unsigned int getObjectId();
 
@@ -54,14 +62,17 @@ namespace Ai {
 		virtual glm::mat4& getProjection();
 	};
 
-	class AiTexQuadObject : public AiObject {
+	class AiTexQuadObject : public AiObject 
+	{
 	private:
 		unsigned int m_VAO;
 		unsigned int m_VBO;
 		unsigned int m_EBO;
 
-		// TODO:: Optimize by singleton mode.
-		unsigned int m_shaderID;
+		static unsigned int m_shaderID;
+		// If m_shaderIsGenerated is ture, means shader has been generated.
+		// Else, shader should be generated first.
+		static bool m_shaderIsGenerated;
 
 		std::string m_imgPath;
 		std::shared_ptr<Texture2D> m_texture;
@@ -69,23 +80,26 @@ namespace Ai {
 		AiTexQuadObject() = delete;
 
 		AiTexQuadObject(unsigned int id, std::string name, std::string imgPath);
+
+		virtual ~AiTexQuadObject();
 		
 		void init();
 
 		virtual void draw() override;
 
-		virtual ~AiTexQuadObject();
-	private:
-		unsigned int initShader();
+	protected:
+		virtual unsigned int initShader() noexcept;
 	public:
-		static constexpr float m_vertices[20] = {
+		static constexpr float m_vertices[20] = 
+		{
 			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, // top right
 			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // bottom right
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, // bottom left
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f  // top left 
 		};
 
-		static constexpr unsigned int m_indices[6] = {
+		static constexpr unsigned int m_indices[6] = 
+		{
 			0, 1, 3, // first triangle
 			1, 2, 3  // second triangle
 		};
@@ -101,9 +115,9 @@ namespace Ai {
 			"void main()\n"
 			"{\n"
 			"   gl_Position = projection * view * model *  vec4(aPos, 1.0);\n"
-			//"   gl_Position = view * model *  vec4(aPos, 1.0);\n"
 			"   TexCoord = aTex;\n"
 			"}\0";
+
 		static constexpr char* fragmentShaderCode = "#version 330 core\n"
 			"out vec4 FragColor;\n"
 			"in vec2 TexCoord;\n"

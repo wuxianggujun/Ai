@@ -20,7 +20,6 @@ private:
 	int m_width;
 	int m_height;
 	int m_channels;
-
 public:
 	Texture2D(std::string imgPath) {
 		glGenTextures(1, &m_textureId);
@@ -56,5 +55,4 @@ public:
 		glDeleteTextures(1, &m_textureId);
 	}
 };
-
 #endif

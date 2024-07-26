@@ -20,7 +20,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Ai {
+namespace Ai 
+{
 	void renderAiInit();
 
 	void renderAi();
@@ -41,7 +42,6 @@ namespace Ai {
 	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos);
 	void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue);
 
-	// TODO::Improve the return value type.
 	std::shared_ptr<AiTexQuadObject> addTex(unsigned int id, std::string name, std::string imgPath);
 
 	void processInput(GLFWwindow* window);

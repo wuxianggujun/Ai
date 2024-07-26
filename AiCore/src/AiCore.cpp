@@ -5,7 +5,8 @@
 
 #include <iostream>
 
-namespace Ai {
+namespace Ai 
+{
     GLFWwindow* window;
     static unsigned int SCR_WIDTH = 1000;
     static unsigned int SCR_HEIGHT = 1000;
@@ -20,7 +21,8 @@ namespace Ai {
 
     static float WH_Ratio = float(SCR_WIDTH) / float(SCR_HEIGHT);
 
-    struct PainterObject {
+    struct PainterObject 
+    {
         unsigned int VAO;
         unsigned int VBO;
         unsigned int EBO;
@@ -33,13 +35,15 @@ namespace Ai {
     
     float lineVertices[6] = { 1.0f };
 
-    static float triangleVertices[9] = {
+    static float triangleVertices[9] = 
+    {
          0.0f, 0.1f, 1.0f,
          0.1f,-0.1f, 1.0f,
         -0.1f,-0.1f, 1.0f
     };
 
-    static float squareVertices[18] = {
+    static float squareVertices[18] = 
+    {
         -0.1f, 0.1f, 1.0f,
          0.1f, 0.1f, 1.0f,
          0.1f,-0.1f, 1.0f,
@@ -55,10 +59,12 @@ namespace Ai {
 
     constexpr double PI = 3.1415926;
 
-    void setCircleVertices() {
+    void setCircleVertices() 
+    {
         circleVertices[0] = 0.0f;
         circleVertices[1] = 0.0f;
-        for (unsigned int i = 1; i < 361; ++i) {
+        for (unsigned int i = 1; i < 361; ++i) 
+        {
             float angleInRadians = static_cast<float>(i) * PI / 180.0;
             float sinValue = std::sin(angleInRadians);
             float cosValue = std::cos(angleInRadians);
@@ -67,8 +73,10 @@ namespace Ai {
         }
     }
 
-    void setCircleElementVertices() {
-        for (int i = 0; i < 359; i++) {
+    void setCircleElementVertices() 
+    {
+        for (int i = 0; i < 359; i++) 
+        {
             circleElementVertices[i * 3 + 1] = i + 1;
             circleElementVertices[i * 3 + 2] = i + 2;
         }
@@ -78,12 +86,10 @@ namespace Ai {
 
     std::vector<std::shared_ptr<Painter>> RenderPainterVector;
     std::vector<std::shared_ptr<AiObject>> RenderObjectVector;
-
-    //std::vector<std::shared_ptr<Painter>> Render
-
     std::map<std::string, unsigned int> ShaderMap;
 
-    void renderAiInit() {
+    void renderAiInit() 
+    {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -174,12 +180,14 @@ namespace Ai {
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            if (RenderPainterVector.size() != 0 || RenderObjectVector.size() != 0) {
+            if (RenderPainterVector.size() != 0 || RenderObjectVector.size() != 0) 
+            {
                 int vertexScaleLocation;
                 int vertexPosLocation;
                 int vertexColorLocation;
                 glEnable(GL_DEPTH_TEST);
-                for (int i = 0; i < RenderObjectVector.size(); i++) {
+                for (int i = 0; i < RenderObjectVector.size(); i++) 
+                {
                     glm::mat4& tmp = RenderObjectVector[i]->getView();
                     RenderObjectVector[i]->getView() = view;
                     RenderObjectVector[i]->getProjection() = projection;
@@ -187,13 +195,15 @@ namespace Ai {
                 }
 
                 glDisable(GL_DEPTH_TEST);
-                for (int i = 0; i < RenderPainterVector.size(); i++) {
+                for (int i = 0; i < RenderPainterVector.size(); i++) 
+                {
                     std::pair<float, float> point;
                     std::pair<float, float> scale;
                     std::pair<float, float> pos;
                     std::tuple<float, float, float> color;
 
-                    switch (RenderPainterVector[i]->getObjectType()) {
+                    switch (RenderPainterVector[i]->getObjectType()) 
+                    {
                     case ObjectType::LINE:
                         glUseProgram(ShaderMap["Line"]);
                         glLineWidth(1.0f);
@@ -267,9 +277,6 @@ namespace Ai {
                 glfwSwapBuffers(window);
                 glfwPollEvents();
             }
-            //else {
-            //    std::cout << "Nothing to rendering~" << std::endl;
-            //}
         }
         glDeleteVertexArrays(1, &g_triangle.VAO);
         glDeleteBuffers(1, &g_triangle.VBO);
@@ -278,7 +285,13 @@ namespace Ai {
         glDeleteVertexArrays(1, &g_circle.VAO);
         glDeleteBuffers(1, &g_circle.VBO);
         glDeleteBuffers(1, &g_circle.EBO);
-        // TODO::Delete shader programs...
+        
+        // Delete shader programs in ShaderMap
+        glUseProgram(0);
+        for (auto iter = ShaderMap.begin(); iter != ShaderMap.end(); iter++)
+        {
+            glDeleteProgram(iter->second);
+        }
     }
 
     void addLineShader()
@@ -385,40 +398,49 @@ namespace Ai {
         ShaderMap["Polygon"] = shaderProgram;
 	}
 
-    void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY) {
+    void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY) 
+    {
         RenderPainterVector.push_back(std::make_shared<Line>(id, startPointX, startPointY, endPointX, endPointY));
     }
 
     void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY,
-        float red, float green, float blue) {
+        float red, float green, float blue) 
+    {
         RenderPainterVector.push_back(std::make_shared<Line>(id, startPointX, startPointY, endPointX, endPointY, red, green, blue));
     }
 
-    void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos) {
+    void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos) 
+    {
         RenderPainterVector.push_back(std::make_shared<Triangle>(id, xscale, yscale, xpos, ypos));
     }
 
-    void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
+    void addTriangle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) 
+    {
         RenderPainterVector.push_back(std::make_shared<Triangle>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 
-    void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos) {
+    void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos) 
+    {
         RenderPainterVector.push_back(std::make_shared<Square>(id, xscale, yscale, xpos, ypos));
     }
 
-    void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
+    void addSquare(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) 
+    {
         RenderPainterVector.push_back(std::make_shared<Square>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 
-    void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos) {
+    void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos) 
+    {
         RenderPainterVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos));
     }
 
-    void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) {
+    void addCircle(unsigned int id, float xscale, float yscale, float xpos, float ypos, float red, float green, float blue) 
+    {
         RenderPainterVector.push_back(std::make_shared<Circle>(id, xscale, yscale, xpos, ypos, red, green, blue));
     }
 
-    std::shared_ptr<AiTexQuadObject> addTex(unsigned int id, std::string name, std::string imgPath) {
+    std::shared_ptr<AiTexQuadObject> addTex(unsigned int id, std::string name, std::string imgPath) 
+    {
         std::shared_ptr<AiTexQuadObject> sp = std::make_shared<AiTexQuadObject>(id, name, imgPath);
         RenderObjectVector.push_back(sp);
         return sp;
@@ -465,4 +487,3 @@ namespace Ai {
         camera.ProcessMouseScroll(static_cast<float>(yoffset));
     }
 }
-

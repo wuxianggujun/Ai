@@ -6,7 +6,8 @@
 
 #include <thread>
 
-void addObjectsFunction() {
+void addObjectsFunction() 
+{
 	// TODO::Replace with template.
 	std::chrono::seconds waitTime(1);
 	Ai::addTriangle(0, 0.5f, 0.5f, 0.25f, 0.25f);
@@ -26,7 +27,8 @@ void addObjectsFunction() {
 	Ai::addCircle(7, 2.0f, 2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f);
 }
 
-void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj) {
+void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj) 
+{
 	auto& rotate = obj->getRotate();
 	auto& scale = obj->getScale();
 	scale.x = 1.2f;
@@ -37,13 +39,18 @@ void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj) {
 	}
 }
 
-int main() {
+int main() 
+{
 	Ai::renderAiInit();
 
 	std::thread t(addObjectsFunction);
 	t.detach();
 
 	std::shared_ptr<Ai::AiTexQuadObject> tex = Ai::addTex(8, "azibao", "resources/textures/azi1.jpg");
+	auto tex2 = Ai::addTex(9, "azibao", "resources/textures/azibao.jpg");
+
+	auto& translation = tex2->getTranslate();
+	translation.x = 2.0f;
 
 	std::thread t2(rotateTex, tex);
 	t2.detach();

@@ -1,23 +1,31 @@
 #include "Object.h"
 
 namespace Ai {
-	unsigned int AiObject::getObjectId() {
+	unsigned int AiTexQuadObject::m_shaderID = 0;
+	bool AiTexQuadObject::m_shaderIsGenerated = false;
+
+	unsigned int AiObject::getObjectId() 
+	{
 		return m_objectId;
 	}
 
-	std::string AiObject::getObjectName() {
+	std::string AiObject::getObjectName() 
+	{
 		return m_objectName;
 	}
 
-	glm::vec3& AiObject::getTranslate() {
+	glm::vec3& AiObject::getTranslate() 
+	{
 		return m_translate;
 	}
 
-	glm::vec3& AiObject::getRotate() {
+	glm::vec3& AiObject::getRotate() 
+	{
 		return m_rotate;
 	}
 
-	glm::vec3& AiObject::getScale() {
+	glm::vec3& AiObject::getScale() 
+	{
 		return m_scale;
 	}
 
@@ -39,10 +47,21 @@ namespace Ai {
         // Init the only texture.
         m_texture = std::make_shared<Texture2D>(m_imgPath);
 		// Init the shader.
-		m_shaderID = initShader();
+		if (!m_shaderIsGenerated) {
+			m_shaderID = initShader();
+			m_shaderIsGenerated = true;
+		}
 	}
 
-	void AiTexQuadObject::init() {
+	AiTexQuadObject::~AiTexQuadObject()
+	{
+		glDeleteVertexArrays(1, &m_VAO);
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_EBO);
+	}
+
+	void AiTexQuadObject::init() 
+	{
         glGenVertexArrays(1, &m_VAO);
         glGenBuffers(1, &m_VBO);
         glGenBuffers(1, &m_EBO);
@@ -59,7 +78,8 @@ namespace Ai {
         glBindVertexArray(0);
 	}
 
-	void AiTexQuadObject::draw() {
+	void AiTexQuadObject::draw() 
+	{
 		// Active texture0 slot and bind m_texture.
 		glActiveTexture(GL_TEXTURE0);
 		m_texture->bind();
@@ -87,7 +107,8 @@ namespace Ai {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
-    unsigned int AiTexQuadObject::initShader() {
+    unsigned int AiTexQuadObject::initShader() noexcept
+	{
 		unsigned int vertexShader;
 		vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
@@ -114,7 +135,8 @@ namespace Ai {
 		glAttachShader(shaderProgram, fragmentShader);
 		glLinkProgram(shaderProgram);
 		glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-		if (!success) {
+		if (!success) 
+		{
 			glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 			std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 		}
@@ -123,10 +145,4 @@ namespace Ai {
 
 		return shaderProgram;
     }
-
-	AiTexQuadObject::~AiTexQuadObject() {
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
-	}
 }
