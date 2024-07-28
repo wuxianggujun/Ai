@@ -43,18 +43,27 @@ int main()
 {
 	Ai::renderAiInit();
 
-	std::thread t(addObjectsFunction);
-	t.detach();
+	//// Demo1
+	//std::thread t(addObjectsFunction);
+	//t.detach();
 
+	// Demo2
 	std::shared_ptr<Ai::AiTexQuadObject> tex = Ai::addTex(8, "azibao", "resources/textures/azi1.jpg");
 	auto tex2 = Ai::addTex(9, "azibao", "resources/textures/azibao.jpg");
-
 	auto& translation = tex2->getTranslate();
 	translation.x = 2.0f;
-
 	std::thread t2(rotateTex, tex);
 	t2.detach();
 
+	// Demo3
+	auto cube = Ai::addPureCube(9);
+	auto& scale = cube->getScale();
+	scale *= 0.1;
+	auto& position = cube->getTranslate();
+	position.x = -2.0f;
+	cube->setColor(1.0f, 0.0f, 0.0f);
+
+	// RenderLoop
 	Ai::renderAi();
 
 	std::cout << "Waiting...Waiting..." << std::endl;

@@ -1,6 +1,7 @@
 #pragma once 
 #ifndef OBJECT_H
 
+#include <vector>
 #include <string>
 #include <memory>
 
@@ -40,6 +41,16 @@ namespace Ai
 
 		}
 
+		AiObject(unsigned int id):
+			m_objectId(id),
+			m_objectName(""),
+			m_translate(0.0f),
+			m_rotate(0.0f),
+			m_scale(1.0f)
+		{
+
+		}
+
 		virtual ~AiObject() 
 		{
 
@@ -48,6 +59,8 @@ namespace Ai
 		unsigned int getObjectId();
 
 		std::string getObjectName();
+
+		virtual void init() = 0;
 
 		virtual void draw() = 0;
 
@@ -82,12 +95,12 @@ namespace Ai
 		AiTexQuadObject(unsigned int id, std::string name, std::string imgPath);
 
 		virtual ~AiTexQuadObject();
-		
-		void init();
 
 		virtual void draw() override;
 
 	protected:
+		virtual void init() override;
+
 		virtual unsigned int initShader() noexcept;
 	public:
 		static constexpr float m_vertices[20] = 
@@ -125,6 +138,88 @@ namespace Ai
 			"void main()\n"
 			"{\n"
 			"   FragColor = texture(tex1, TexCoord);\n"
+			"}\n\0";
+	};
+
+	class AiPureCubeObject : public AiObject {
+	private:
+		unsigned int m_VAO;
+		unsigned int m_VBO;
+		unsigned int m_EBO;
+
+		static unsigned int m_shaderID;
+		// If m_shaderIsGenerated is ture, means shader has been generated.
+		// Else, shader should be generated first.
+		static bool m_shaderIsGenerated;
+
+		glm::vec3 m_color;
+	public:
+		AiPureCubeObject() = delete;
+
+		AiPureCubeObject(unsigned int id);
+		
+		~AiPureCubeObject();
+
+		virtual void draw() override;
+
+		void setColor(float r, float g, float b);
+	private:
+		virtual void init() override;
+
+		virtual unsigned int initShader() noexcept;
+	private:
+		static constexpr float m_vertices[24] =
+		{
+			-0.5f, 0.5f, 0.5f,
+			 0.5f, 0.5f, 0.5f,
+			 0.5f, 0.5f,-0.5f,
+			-0.5f, 0.5f,-0.5f,
+
+			-0.5f,-0.5f, 0.5f,
+			 0.5f,-0.5f, 0.5f,
+			 0.5f,-0.5f,-0.5f,
+			-0.5f,-0.5f,-0.5f
+		};
+
+		static constexpr unsigned int m_indices[36] =
+		{
+			// Top
+			0, 1, 2,
+			0, 2, 3,
+			// Front
+			4, 5, 1,
+			4, 1, 0,
+			// Right
+			5, 6, 2,
+			5, 2, 1,
+			// Back
+			6, 7, 3,
+			6, 3, 2,
+			// Left
+			7, 4, 0,
+			7, 0, 3,
+			// Bottom
+			7, 6, 5,
+			7, 5, 4
+		};
+	
+		// Shader source code.
+		static constexpr char* vertexShaderCode = "#version 330 core\n"
+			"layout (location = 0) in vec3 aPos;\n"
+			"uniform mat4 model;\n"
+			"uniform mat4 view;\n"
+			"uniform mat4 projection;\n"
+			"void main()\n"
+			"{\n"
+			"   gl_Position = projection * view * model *  vec4(aPos, 1.0);\n"
+			"}\0";
+
+		static constexpr char* fragmentShaderCode = "#version 330 core\n"
+			"uniform vec4 color;\n"
+			"out vec4 FragColor;\n"
+			"void main()\n"
+			"{\n"
+			"   FragColor = color;\n"
 			"}\n\0";
 	};
 }

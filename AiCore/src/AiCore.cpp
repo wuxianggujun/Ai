@@ -446,6 +446,13 @@ namespace Ai
         return sp;
     }
 
+    std::shared_ptr<AiPureCubeObject> addPureCube(unsigned int id)
+    {
+        std::shared_ptr<AiPureCubeObject> sp = std::make_shared<AiPureCubeObject>(id);
+        RenderObjectVector.push_back(sp);
+        return sp;
+    }
+
     void processInput(GLFWwindow* window)
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

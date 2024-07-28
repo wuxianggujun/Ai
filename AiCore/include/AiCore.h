@@ -44,6 +44,8 @@ namespace Ai
 
 	std::shared_ptr<AiTexQuadObject> addTex(unsigned int id, std::string name, std::string imgPath);
 
+	std::shared_ptr<AiPureCubeObject> addPureCube(unsigned int id);
+
 	void processInput(GLFWwindow* window);
 
 	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
