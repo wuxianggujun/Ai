@@ -52,16 +52,34 @@ int main()
 	auto tex2 = Ai::addTex(9, "azibao", "resources/textures/azibao.jpg");
 	auto& translation = tex2->getTranslate();
 	translation.x = 2.0f;
-	std::thread t2(rotateTex, tex);
+	std::thread t2(rotateTex, tex2);
 	t2.detach();
 
 	// Demo3
+	glm::vec3 plPosition(1.0f, 1.0f, 1.0f);
+	glm::vec3 plColor(1.0f, 1.0f, 1.0f);
 	auto cube = Ai::addPureCube(9);
 	auto& scale = cube->getScale();
 	scale *= 0.1;
 	auto& position = cube->getTranslate();
-	position.x = -2.0f;
-	cube->setColor(1.0f, 0.0f, 0.0f);
+	position = plPosition;
+	cube->setColor(1.0f, 1.0f, 1.0f);
+
+	// Demo4
+	std::shared_ptr<Shader> basicShader = std::make_shared<Shader>("resources/shaders/01.basicShader.vs", 
+		"resources/shaders/01.basicShader.fs");
+	 //pl();
+
+	auto sp_pl = std::make_shared<Ai::PointLight>(plPosition, plColor);
+	auto quad = Ai::addAiQuad(10, basicShader, sp_pl);
+	auto& quadScale = quad->getScale();
+	quadScale = glm::vec3(2.0f);
+	auto& quadPosition = quad->getTranslate();
+	quadPosition.z = 1.0f;
+	quadPosition.y = -0.5f;
+	auto& quadRotate = quad->getRotate();
+	quadRotate.x = -90;
+
 
 	// RenderLoop
 	Ai::renderAi();

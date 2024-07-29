@@ -1,6 +1,36 @@
 #include "Object.h"
 
 namespace Ai {
+	extern Camera camera;
+	// ----------------------------------------------------------------------------------------------------
+	// Class PointLight
+	PointLight::PointLight(glm::vec3 position, glm::vec3 color)
+	{
+		m_position = position;
+		m_color = color;
+	}
+
+	glm::vec3& PointLight::getPosition()
+	{
+		return m_position;
+	}
+
+	void PointLight::setPosition(glm::vec3 position)
+	{
+		m_position = position;
+	}
+
+	glm::vec3& PointLight::getColor()
+	{
+		return m_color;
+	}
+
+	void PointLight::setColor(glm::vec3 color)
+	{
+		m_color = color;
+	}
+	// ====================================================================================================
+
 	unsigned int AiObject::getObjectId() 
 	{
 		return m_objectId;
@@ -260,6 +290,61 @@ namespace Ai {
 		glDeleteShader(fragmentShader);
 
 		return shaderProgram;
+	}
+	// ====================================================================================================
+
+	// ----------------------------------------------------------------------------------------------------
+	// Class AiQuad
+	AiQuad::AiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource)
+		:AiObject(id), m_shader(shader), m_lightSource(lightSource), m_color{ 1.0f, 0.5f, 0.31f }
+	{
+		
+		init();
+	}
+
+	void AiQuad::draw()
+	{
+		// Use shader.
+		m_shader->use();
+
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, m_translate);
+		model = glm::rotate(model, glm::radians(m_rotate.x), glm::vec3(1.0, 0.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.y), glm::vec3(0.0, 1.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.z), glm::vec3(0.0, 0.0, 1.0));
+		model = glm::scale(model, m_scale);
+		m_shader->setMat4("model", model);
+		m_shader->setMat4("view", m_view);
+		m_shader->setMat4("projection", m_projection);
+
+		// Set lighting calculation items.
+		m_shader->setVec3("lightPos", m_lightSource->getPosition());
+		m_shader->setVec3("lightColor", m_lightSource->getColor());
+		m_shader->setVec3("objectColor", m_color);
+		m_shader->setVec3("viewPos", camera.Position);
+
+		// Bind m_VAO.
+		glBindVertexArray(m_VAO);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	}
+
+	// TODO::Simplify initialization function.
+	void AiQuad::init()
+	{
+		glGenVertexArrays(1, &m_VAO);
+		glGenBuffers(1, &m_VBO);
+		glGenBuffers(1, &m_EBO);
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
 	}
 	// ====================================================================================================
 }

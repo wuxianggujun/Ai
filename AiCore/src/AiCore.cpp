@@ -83,10 +83,15 @@ namespace Ai
         circleElementVertices[359 * 3 + 1] = 359 + 1;
         circleElementVertices[359 * 3 + 2] = 1;
     }
-
-    std::vector<std::shared_ptr<Painter>> RenderPainterVector;
+    
+    // Painter objects container.
+    std::vector<std::shared_ptr<Painter>> RenderPainterVector; // TODO::Container type independent
+    // AiObject(3D) container.
     std::vector<std::shared_ptr<AiObject>> RenderObjectVector;
+    // Shader container.
     std::map<std::string, unsigned int> ShaderMap;
+    // Point light container.
+    std::vector<PointLight> PointLights;
 
     void renderAiInit() 
     {
@@ -449,6 +454,13 @@ namespace Ai
     std::shared_ptr<AiPureCubeObject> addPureCube(unsigned int id)
     {
         std::shared_ptr<AiPureCubeObject> sp = std::make_shared<AiPureCubeObject>(id);
+        RenderObjectVector.push_back(sp);
+        return sp;
+    }
+
+    std::shared_ptr<AiQuad> addAiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightPoint)
+    {
+        std::shared_ptr<AiQuad> sp = std::make_shared<AiQuad>(id, shader, lightPoint);
         RenderObjectVector.push_back(sp);
         return sp;
     }

@@ -16,6 +16,25 @@
 
 namespace Ai 
 {
+	class PointLight 
+	{
+	private:
+		glm::vec3 m_position;
+		glm::vec3 m_color;
+	public:
+		PointLight() = delete;
+
+		PointLight(glm::vec3 position, glm::vec3 color);
+
+		glm::vec3& getPosition();
+
+		void setPosition(glm::vec3 position);
+
+		glm::vec3& getColor();
+
+		void setColor(glm::vec3 color);
+	};
+
 	class AiObject 
 	{
 	private:
@@ -221,6 +240,47 @@ namespace Ai
 			"{\n"
 			"   FragColor = color;\n"
 			"}\n\0";
+	};
+
+	// Temp Class
+	class AiQuad : public AiObject
+	{
+	private:
+		unsigned int m_VAO;
+		unsigned int m_VBO;
+		unsigned int m_EBO;
+
+		bool m_shaderFlag;
+		std::shared_ptr<Shader> m_shader;
+
+		glm::vec3 m_color;
+
+		// Light source.
+		std::shared_ptr<PointLight> m_lightSource;
+	public:
+		AiQuad() = delete;
+
+		AiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource);
+
+		~AiQuad(){}
+
+		virtual void draw() override;
+	private:
+		virtual void init() override;
+	private:
+		static constexpr float m_vertices[24] =
+		{
+			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// top right
+			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// bottom right
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// bottom left
+			-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f	// top left 
+		};
+
+		static constexpr unsigned int m_indices[6] =
+		{
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
 	};
 }
 #endif
