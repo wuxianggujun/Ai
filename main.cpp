@@ -6,27 +6,6 @@
 
 #include <thread>
 
-void addObjectsFunction() 
-{
-	// TODO::Replace with template.
-	std::chrono::seconds waitTime(1);
-	Ai::addTriangle(0, 0.5f, 0.5f, 0.25f, 0.25f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addTriangle(1, 0.25f, 0.25f, 0.5f, 0.5f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addTriangle(2, 0.25f, 0.25f, 0.75f, 0.5f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addSquare(3, 0.25f, 0.25f, 0.5f, 0.75f, 0.0f, 0.0f, 1.0f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addSquare(4, 0.25f, 0.25f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addSquare(5, 0.25f, 0.25f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addLine(6, -0.9f, -0.9f, 0.9f, -0.9f, 1.0f, 1.0f, 0.0f);
-	std::this_thread::sleep_for(waitTime);
-	Ai::addCircle(7, 2.0f, 2.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f);
-}
-
 void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj) 
 {
 	auto& rotate = obj->getRotate();
@@ -43,34 +22,28 @@ int main()
 {
 	Ai::renderAiInit();
 
-	//// Demo1
-	//std::thread t(addObjectsFunction);
-	//t.detach();
-
-	// Demo2
+	// Demo1
 	std::shared_ptr<Ai::AiTexQuadObject> tex = Ai::addTex(8, "azibao", "resources/textures/azi1.jpg");
 	auto tex2 = Ai::addTex(9, "azibao", "resources/textures/azibao.jpg");
 	auto& translation = tex2->getTranslate();
 	translation.x = 2.0f;
-	std::thread t2(rotateTex, tex2);
+	std::thread t2(rotateTex, tex);
 	t2.detach();
 
-	// Demo3
-	glm::vec3 plPosition(1.0f, 1.0f, 1.0f);
+	// Demo2
+	glm::vec3 lightSorcePosition(1.0f, 1.0f, 1.0f);
 	glm::vec3 plColor(1.0f, 1.0f, 1.0f);
-	auto cube = Ai::addPureCube(9);
-	auto& scale = cube->getScale();
+	auto lightSource = Ai::addPureCube(9);
+	auto& scale = lightSource->getScale();
 	scale *= 0.1;
-	auto& position = cube->getTranslate();
-	position = plPosition;
-	cube->setColor(1.0f, 1.0f, 1.0f);
+	auto& position = lightSource->getTranslate();
+	position = lightSorcePosition;
+	lightSource->setColor(1.0f, 1.0f, 1.0f);
 
-	// Demo4
+	// Demo3
 	std::shared_ptr<Shader> basicShader = std::make_shared<Shader>("resources/shaders/01.basicShader.vs", 
 		"resources/shaders/01.basicShader.fs");
-	 //pl();
-
-	auto sp_pl = std::make_shared<Ai::PointLight>(plPosition, plColor);
+	auto sp_pl = std::make_shared<Ai::PointLight>(lightSorcePosition, plColor);
 	auto quad = Ai::addAiQuad(10, basicShader, sp_pl);
 	auto& quadScale = quad->getScale();
 	quadScale = glm::vec3(2.0f);
@@ -79,6 +52,9 @@ int main()
 	quadPosition.y = -0.5f;
 	auto& quadRotate = quad->getRotate();
 	quadRotate.x = -90;
+	//material
+	Ai::Material material{ {0.174f, 0.0117f, 0.0117f}, {0.61424f, 0.04136f,  0.04136f}, {0.7278f, 0.626959f, 0.626959f}, 32.0f };
+	quad->setMaterail(material);
 
 
 	// RenderLoop

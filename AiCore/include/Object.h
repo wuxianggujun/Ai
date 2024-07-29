@@ -242,6 +242,15 @@ namespace Ai
 			"}\n\0";
 	};
 
+	struct Material 
+	{
+		glm::vec3 ambient;
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+
+		float shininess;
+	};
+
 	// Temp Class
 	class AiQuad : public AiObject
 	{
@@ -253,7 +262,8 @@ namespace Ai
 		bool m_shaderFlag;
 		std::shared_ptr<Shader> m_shader;
 
-		glm::vec3 m_color;
+		// Object Material.
+		Material m_material;
 
 		// Light source.
 		std::shared_ptr<PointLight> m_lightSource;
@@ -263,6 +273,8 @@ namespace Ai
 		AiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource);
 
 		~AiQuad(){}
+
+		void setMaterail(Material& material);
 
 		virtual void draw() override;
 	private:

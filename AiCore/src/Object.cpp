@@ -295,11 +295,19 @@ namespace Ai {
 
 	// ----------------------------------------------------------------------------------------------------
 	// Class AiQuad
-	AiQuad::AiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource)
-		:AiObject(id), m_shader(shader), m_lightSource(lightSource), m_color{ 1.0f, 0.5f, 0.31f }
+	AiQuad::AiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource) : 
+		AiObject(id), 
+		m_shader(shader), 
+		m_lightSource(lightSource), 
+		m_material{ {0.25f, 0.21f, 0.21f}, {1.0f, 1.0f, 1.0f}, {0.3f, 0.3f, 0.3f}, 1/0.088f }
 	{
 		
 		init();
+	}
+
+	void AiQuad::setMaterail(Material& material)
+	{
+		m_material = material;
 	}
 
 	void AiQuad::draw()
@@ -320,8 +328,12 @@ namespace Ai {
 		// Set lighting calculation items.
 		m_shader->setVec3("lightPos", m_lightSource->getPosition());
 		m_shader->setVec3("lightColor", m_lightSource->getColor());
-		m_shader->setVec3("objectColor", m_color);
 		m_shader->setVec3("viewPos", camera.Position);
+
+		m_shader->setVec3("material.ambient", m_material.ambient);
+		m_shader->setVec3("material.diffuse", m_material.diffuse);
+		m_shader->setVec3("material.specular", m_material.specular);
+		m_shader->setFloat("material.shininess", m_material.shininess);
 
 		// Bind m_VAO.
 		glBindVertexArray(m_VAO);
