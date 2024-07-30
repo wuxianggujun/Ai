@@ -465,6 +465,14 @@ namespace Ai
         return sp;
     }
 
+    std::shared_ptr<AiQuadLM> addAiQuadLM(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightPoint,
+        std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular)
+    {
+        std::shared_ptr<AiQuadLM> sp = std::make_shared<AiQuadLM>(id, shader, lightPoint, diffuse, specular);
+        RenderObjectVector.push_back(sp);
+        return sp;
+    }
+
     void processInput(GLFWwindow* window)
     {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

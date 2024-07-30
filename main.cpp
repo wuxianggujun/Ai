@@ -56,6 +56,15 @@ int main()
 	Ai::Material material{ {0.174f, 0.0117f, 0.0117f}, {0.61424f, 0.04136f,  0.04136f}, {0.7278f, 0.626959f, 0.626959f}, 32.0f };
 	quad->setMaterail(material);
 
+	// Demo4
+	// diffuseMap
+	std::shared_ptr<Texture2D> diffuseMap = std::make_shared<Texture2D>("resources/textures/container2.png");
+	std::shared_ptr<Texture2D> specularMap = std::make_shared<Texture2D>("resources/textures/container2_specular.png");
+	std::shared_ptr<Shader> lightingMapShader = std::make_shared<Shader>("resources/shaders/02.lightingMap.vs",
+		"resources/shaders/02.lightingMap.fs");
+	auto quadLM = Ai::addAiQuadLM(11, lightingMapShader, sp_pl, diffuseMap, specularMap);
+	auto& quadLMPosition = quadLM->getTranslate();
+	quadLMPosition.x = -1.5f;
 
 	// RenderLoop
 	Ai::renderAi();

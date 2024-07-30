@@ -305,6 +305,13 @@ namespace Ai {
 		init();
 	}
 
+	AiQuad::~AiQuad()
+	{
+		glDeleteVertexArrays(1, &m_VAO);
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_EBO);
+	}
+
 	void AiQuad::setMaterail(Material& material)
 	{
 		m_material = material;
@@ -353,6 +360,91 @@ namespace Ai {
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
 		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+	}
+	// ====================================================================================================
+
+	// ----------------------------------------------------------------------------------------------------
+	// Class AiQuadLM
+	AiQuadLM::AiQuadLM(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource,
+		std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular):
+		AiObject(id),
+		m_shader(shader),
+		m_lightSource(lightSource),
+		m_diffuse(diffuse),
+		m_specular(specular)
+	{
+		init();
+	}
+
+	AiQuadLM::~AiQuadLM() 
+	{
+		glDeleteVertexArrays(1, &m_VAO);
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_EBO);
+	}
+
+	void AiQuadLM::setLightingMaps(std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular)
+	{
+		m_diffuse = diffuse;
+		m_specular = specular;
+	}
+
+	void AiQuadLM::draw()
+	{
+		// Use shader.
+		m_shader->use();
+		m_shader->setInt("diffuse", 0);
+		m_shader->setInt("material.specular", 1);
+
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, m_translate);
+		model = glm::rotate(model, glm::radians(m_rotate.x), glm::vec3(1.0, 0.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.y), glm::vec3(0.0, 1.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.z), glm::vec3(0.0, 0.0, 1.0));
+		model = glm::scale(model, m_scale);
+		m_shader->setMat4("model", model);
+		m_shader->setMat4("view", m_view);
+		m_shader->setMat4("projection", m_projection);
+
+		// Set lighting calculation items.
+		m_shader->setVec3("lightPos", m_lightSource->getPosition());
+		m_shader->setVec3("lightColor", m_lightSource->getColor());
+		m_shader->setVec3("viewPos", camera.Position);
+
+		
+		// bind diffuse map
+		glActiveTexture(GL_TEXTURE0);
+		m_diffuse->bind();
+		//// bind specular map
+		glActiveTexture(GL_TEXTURE1);
+		m_specular->bind();
+		m_shader->setFloat("material.shininess", 32.0f);
+		
+		// Bind m_VAO.
+		glBindVertexArray(m_VAO);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void AiQuadLM::init()
+	{
+		glGenVertexArrays(1, &m_VAO);
+		glGenBuffers(1, &m_VBO);
+		glGenBuffers(1, &m_EBO);
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+		glEnableVertexAttribArray(2);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

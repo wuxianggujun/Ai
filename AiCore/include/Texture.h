@@ -36,7 +36,14 @@ public:
 		unsigned char* data = stbi_load(m_imgPath.c_str(), &m_width, &m_height, &m_channels, 0);
 		if (data)
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			GLenum format;
+			if (m_channels == 1)
+				format = GL_RED;
+			else if (m_channels == 3)
+				format = GL_RGB;
+			else if (m_channels == 4)
+				format = GL_RGBA;
+			glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else

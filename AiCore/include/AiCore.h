@@ -48,6 +48,9 @@ namespace Ai
 
 	std::shared_ptr<AiQuad> addAiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightPoint);
 
+	std::shared_ptr<AiQuadLM> addAiQuadLM(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightPoint, 
+										  std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular);
+
 	void processInput(GLFWwindow* window);
 
 	void mouse_callback(GLFWwindow* window, double xpos, double ypos);

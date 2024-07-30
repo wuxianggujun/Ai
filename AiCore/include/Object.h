@@ -259,7 +259,6 @@ namespace Ai
 		unsigned int m_VBO;
 		unsigned int m_EBO;
 
-		bool m_shaderFlag;
 		std::shared_ptr<Shader> m_shader;
 
 		// Object Material.
@@ -272,7 +271,7 @@ namespace Ai
 
 		AiQuad(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource);
 
-		~AiQuad(){}
+		~AiQuad();
 
 		void setMaterail(Material& material);
 
@@ -286,6 +285,52 @@ namespace Ai
 			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// bottom right
 			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// bottom left
 			-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f	// top left 
+		};
+
+		static constexpr unsigned int m_indices[6] =
+		{
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
+	};
+
+	// Quad with lighting maps.
+	class AiQuadLM : public AiObject
+	{
+	private:
+		unsigned int m_VAO;
+		unsigned int m_VBO;
+		unsigned int m_EBO;
+
+		std::shared_ptr<Shader> m_shader;
+
+		std::shared_ptr<Texture2D> m_diffuse;
+		std::shared_ptr<Texture2D> m_specular;
+
+		// Light source.
+		std::shared_ptr<PointLight> m_lightSource;
+	public:
+		AiQuadLM() = delete;
+
+		AiQuadLM(unsigned int id, std::shared_ptr<Shader> shader, std::shared_ptr<PointLight> lightSource, 
+			std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular);
+
+		~AiQuadLM();
+
+		void setLightingMaps(std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular);
+
+		virtual void draw() override;
+
+	private:
+		virtual void init() override;
+
+	private:
+		static constexpr float m_vertices[32] =
+		{
+			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  1.0f,  1.0f,	// top right
+			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  1.0f,  0.0f,	// bottom right
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f,  0.0f,	// bottom left
+			-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  0.0f,  1.0f	// top left 
 		};
 
 		static constexpr unsigned int m_indices[6] =
