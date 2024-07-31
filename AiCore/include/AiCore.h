@@ -1,3 +1,4 @@
+#pragma once
 #ifndef AI_CORE
 #define AI_CORE
 
@@ -25,6 +26,11 @@ namespace Ai
 	void renderAiInit();
 
 	void renderAi();
+
+	void setDirLight(glm::vec3 direction, glm::vec3 color);
+	void setDirLight(DirLight dirLight);
+
+	SceneLight& getPointLight(int index);
 
 	void addLineShader();
 	void addPolygonShader();

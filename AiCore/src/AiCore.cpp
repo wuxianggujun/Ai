@@ -7,6 +7,13 @@
 
 namespace Ai 
 {
+    // Global light source
+    // 1.Directional light
+    DirLight g_dirLight = { {-0.2f, -1.0f, -0.3f}, {1.0f, 1.0f, 1.0f} };
+    // 2.Point light container
+    //constexpr int maxPointLightNum = 10;
+    std::vector<SceneLight> g_pointLights;
+
     GLFWwindow* window;
     static unsigned int SCR_WIDTH = 1000;
     static unsigned int SCR_HEIGHT = 1000;
@@ -166,6 +173,13 @@ namespace Ai
 
         addLineShader();
         addPolygonShader();
+
+        // TODO::...
+        g_pointLights.push_back({ { -1.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 1.0f, 0.09f, 0.032f });
+        for (int i = 1; i < 10; i++)
+        {
+            g_pointLights.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 1.0f, 0.09f, 0.032f });
+        }
     }
 
     void renderAi()
@@ -297,6 +311,21 @@ namespace Ai
         {
             glDeleteProgram(iter->second);
         }
+    }
+
+    void setDirLight(glm::vec3 direction, glm::vec3 color)
+    {
+        g_dirLight = { direction, color };
+    }
+
+    void setDirLight(DirLight dirLight)
+    {
+        g_dirLight = dirLight;
+    }
+
+    SceneLight& getPointLight(int index)
+    {
+        return g_pointLights[index];
     }
 
     void addLineShader()

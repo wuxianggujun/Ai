@@ -66,6 +66,11 @@ int main()
 	auto& quadLMPosition = quadLM->getTranslate();
 	quadLMPosition.x = -1.5f;
 
+	Ai::setDirLight({ -0.2f, -1.0f, -0.3f }, {0.0f, 0.0f, 0.0f});
+	auto& pl1 = Ai::getPointLight(1);
+	pl1.m_position = { -1.5f, 0.5f, 0.25f};
+	pl1.m_color = { 0.25f, 0.0f, 0.0f };
+
 	// RenderLoop
 	Ai::renderAi();
 

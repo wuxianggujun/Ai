@@ -2,6 +2,12 @@
 
 namespace Ai {
 	extern Camera camera;
+	// 1.Directional light
+	extern DirLight g_dirLight;
+	// 2.Point light container
+	//extern const int maxPointLightNum;
+	extern std::vector<SceneLight> g_pointLights;
+
 	// ----------------------------------------------------------------------------------------------------
 	// Class PointLight
 	PointLight::PointLight(glm::vec3 position, glm::vec3 color)
@@ -397,8 +403,6 @@ namespace Ai {
 	{
 		// Use shader.
 		m_shader->use();
-		m_shader->setInt("diffuse", 0);
-		m_shader->setInt("material.specular", 1);
 
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, m_translate);
@@ -410,12 +414,33 @@ namespace Ai {
 		m_shader->setMat4("view", m_view);
 		m_shader->setMat4("projection", m_projection);
 
-		// Set lighting calculation items.
-		m_shader->setVec3("lightPos", m_lightSource->getPosition());
-		m_shader->setVec3("lightColor", m_lightSource->getColor());
-		m_shader->setVec3("viewPos", camera.Position);
 
-		
+		m_shader->setVec3("viewPos", camera.Position);
+		// Set Directional Light
+		m_shader->setVec3("dirLight.direction", g_dirLight.m_direction);
+		m_shader->setVec3("dirLight.color", g_dirLight.m_color);
+		// Set Point Lights.
+		for (int i = 0; i < g_pointLights.size(); i++)
+		{
+			std::string shaderAttributeName = "pointLights[";
+			shaderAttributeName += std::to_string(i);
+			shaderAttributeName += "].";
+
+			std::string pointLightPosition = shaderAttributeName + "position";
+			m_shader->setVec3(pointLightPosition.c_str(), g_pointLights[i].m_position);
+			std::string pointLightColor = shaderAttributeName + "color";
+			m_shader->setVec3(pointLightColor.c_str(), g_pointLights[i].m_color);
+			std::string pointLightConstant = shaderAttributeName + "constant";
+			m_shader->setFloat(pointLightConstant.c_str(), g_pointLights[i].m_constant);
+			std::string pointLightLinear = shaderAttributeName + "linear";
+			m_shader->setFloat(pointLightLinear.c_str(), g_pointLights[i].m_linear);
+			std::string pointLightQuadratic = shaderAttributeName + "quadratic";
+			m_shader->setFloat(pointLightQuadratic.c_str(), g_pointLights[i].m_quadratic);
+		}
+		m_shader->setFloat("pointLigthNum", g_pointLights.size());
+
+		m_shader->setInt("material.diffuse", 0);
+		m_shader->setInt("material.specular", 1);
 		// bind diffuse map
 		glActiveTexture(GL_TEXTURE0);
 		m_diffuse->bind();
@@ -423,6 +448,9 @@ namespace Ai {
 		glActiveTexture(GL_TEXTURE1);
 		m_specular->bind();
 		m_shader->setFloat("material.shininess", 32.0f);
+
+		//m_shader->setVec3("lightPos", m_lightSource->getPosition());
+		//m_shader->setVec3("lightColor", m_lightSource->getColor());
 		
 		// Bind m_VAO.
 		glBindVertexArray(m_VAO);

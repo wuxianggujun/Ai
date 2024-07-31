@@ -16,6 +16,24 @@
 
 namespace Ai 
 {
+	// Global light source
+	// 1.Directional light
+	struct DirLight
+	{
+		glm::vec3 m_direction;
+		glm::vec3 m_color;
+	};
+	// 2.Point light
+	struct SceneLight
+	{
+		glm::vec3 m_position;
+		glm::vec3 m_color;
+
+		float m_constant;
+		float m_linear;
+		float m_quadratic;
+	};
+
 	class PointLight 
 	{
 	private:
@@ -339,5 +357,7 @@ namespace Ai
 			1, 2, 3  // second triangle
 		};
 	};
+
+
 }
 #endif
