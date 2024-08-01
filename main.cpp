@@ -40,6 +40,8 @@ int main()
 	position = lightSorcePosition;
 	lightSource->setColor(1.0f, 1.0f, 1.0f);
 
+	//for(int i = 0; i < Ai::g_pointLights.)
+
 	// Demo3
 	std::shared_ptr<Shader> basicShader = std::make_shared<Shader>("resources/shaders/01.basicShader.vs", 
 		"resources/shaders/01.basicShader.fs");
@@ -68,8 +70,18 @@ int main()
 
 	Ai::setDirLight({ -0.2f, -1.0f, -0.3f }, {0.0f, 0.0f, 0.0f});
 	auto& pl1 = Ai::getPointLight(1);
-	pl1.m_position = { -1.5f, 0.5f, 0.25f};
-	pl1.m_color = { 0.25f, 0.0f, 0.0f };
+	pl1.m_position = { -2.0f, -0.5f, 1.0f};
+	pl1.m_color = { 1.0f, 0.0f, 0.0f };
+
+	auto& pl2 = Ai::getPointLight(2);
+	pl2.m_position = { -1.0f, -0.5f, 1.0f };
+	pl2.m_color = { 0.0f, 1.0f, 0.0f };
+
+	auto& pl3 = Ai::getPointLight(3);
+	pl3.m_position = { -1.5f, 0.5f, 1.0f };
+	pl3.m_color = { 0.0f, 0.0f, 1.0f };
+
+
 
 	// RenderLoop
 	Ai::renderAi();

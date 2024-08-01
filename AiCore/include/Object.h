@@ -269,7 +269,7 @@ namespace Ai
 		float shininess;
 	};
 
-	// Temp Class
+	// TODO::Modify the draw member funciton.
 	class AiQuad : public AiObject
 	{
 	private:
@@ -357,7 +357,5 @@ namespace Ai
 			1, 2, 3  // second triangle
 		};
 	};
-
-
 }
 #endif

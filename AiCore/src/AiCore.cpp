@@ -175,15 +175,32 @@ namespace Ai
         addPolygonShader();
 
         // TODO::...
-        g_pointLights.push_back({ { -1.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 1.0f, 0.09f, 0.032f });
-        for (int i = 1; i < 10; i++)
+        //g_pointLights.push_back({ { -1.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 1.0f, 0.09f, 0.032f });
+        for (int i = 0; i < 10; i++)
         {
             g_pointLights.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 1.0f, 0.09f, 0.032f });
         }
     }
 
+
+
     void renderAi()
     {
+        for (int i = 0; i < 10; ++i)
+        {
+            // If point light in the contianer has been set, render them.
+            if (g_pointLights[i].m_color != glm::vec3(0.0f, 0.0f, 0.0f))
+            {
+                auto lightSource = addPureCube(0);
+                auto& scale = lightSource->getScale();
+                scale *= 0.1;
+                auto& position = lightSource->getTranslate();
+                position = g_pointLights[i].m_position;
+                auto color = g_pointLights[i].m_color;
+                lightSource->setColor(color.r, color.g, color.b);
+            }
+        }
+
         while (!glfwWindowShouldClose(window))
         {
             float currentFrame = static_cast<float>(glfwGetTime());
