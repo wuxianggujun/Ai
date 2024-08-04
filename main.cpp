@@ -6,6 +6,10 @@
 
 #include <thread>
 
+//#include <assimp/Importer.hpp>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
+
 void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj) 
 {
 	auto& rotate = obj->getRotate();
@@ -65,6 +69,7 @@ int main()
 	std::shared_ptr<Shader> lightingMapShader = std::make_shared<Shader>("resources/shaders/02.lightingMap.vs",
 		"resources/shaders/02.lightingMap.fs");
 	auto quadLM = Ai::addAiQuadLM(11, lightingMapShader, sp_pl, diffuseMap, specularMap);
+	quadLM->changeSelectedState();
 	auto& quadLMPosition = quadLM->getTranslate();
 	quadLMPosition.x = -1.5f;
 
@@ -80,8 +85,6 @@ int main()
 	auto& pl3 = Ai::getPointLight(3);
 	pl3.m_position = { -1.5f, 0.5f, 1.0f };
 	pl3.m_color = { 0.0f, 0.0f, 1.0f };
-
-
 
 	// RenderLoop
 	Ai::renderAi();

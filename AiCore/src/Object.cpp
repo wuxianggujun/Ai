@@ -381,7 +381,8 @@ namespace Ai {
 		m_shader(shader),
 		m_lightSource(lightSource),
 		m_diffuse(diffuse),
-		m_specular(specular)
+		m_specular(specular),
+		m_selected(false)
 	{
 		init();
 	}
@@ -397,6 +398,11 @@ namespace Ai {
 	{
 		m_diffuse = diffuse;
 		m_specular = specular;
+	}
+
+	void AiQuadLM::changeSelectedState()
+	{
+		m_selected = !m_selected;
 	}
 
 	void AiQuadLM::draw()
@@ -448,13 +454,34 @@ namespace Ai {
 		glActiveTexture(GL_TEXTURE1);
 		m_specular->bind();
 		m_shader->setFloat("material.shininess", 32.0f);
+		m_shader->setVec3("stencilColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-		//m_shader->setVec3("lightPos", m_lightSource->getPosition());
-		//m_shader->setVec3("lightColor", m_lightSource->getColor());
-		
+		if (m_selected)
+		{
+			glEnable(GL_STENCIL_TEST);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF); // 所有的片段都应该更新模板缓冲
+			glStencilMask(0xFF); // 启用模板缓冲写入
+		}
+
 		// Bind m_VAO.
 		glBindVertexArray(m_VAO);
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+
+		if (m_selected)
+		{
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00); // 禁止模板缓冲的写入
+			glDisable(GL_DEPTH_TEST);
+			model = glm::scale(model, m_scale * 1.1f);
+			m_shader->setMat4("model", model);
+			m_shader->setVec3("stencilColor", glm::vec3(0.0f, 0.0f, 1.0f));
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			glStencilMask(0xFF);
+
+			glDisable(GL_STENCIL_TEST);
+			glEnable(GL_DEPTH_TEST);
+		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}

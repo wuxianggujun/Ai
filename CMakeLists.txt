@@ -23,6 +23,11 @@ include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glm")
 #Config stb_image
 include_directories("${PROJECT_SOURCE_DIR}/3rd_party/stb")
+#Config assimp
+# option(BUILD_SHARED_LIBS OFF)
+# add_subdirectory(3rd_party/assimp)
+# include_directories(3rd_party/assimp/include)
+
 
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}")
@@ -50,3 +55,4 @@ target_link_libraries(Ai PRIVATE
 					  opengl32.lib
 					  AiCore
 					  )
+

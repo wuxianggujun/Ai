@@ -180,6 +180,8 @@ namespace Ai
         {
             g_pointLights.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 1.0f, 0.09f, 0.032f });
         }
+
+        //tinyobj::ObjReader reader;
     }
 
 
@@ -215,7 +217,7 @@ namespace Ai
             glm::mat4 view = camera.GetViewMatrix();
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             if (RenderPainterVector.size() != 0 || RenderObjectVector.size() != 0) 
             {
                 int vertexScaleLocation;
@@ -447,6 +449,9 @@ namespace Ai
         glDeleteShader(fragmentShader);
 
         ShaderMap["Polygon"] = shaderProgram;
+
+        tinyobj::ObjReader reader;
+
 	}
 
     void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY) 

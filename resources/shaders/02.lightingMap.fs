@@ -33,6 +33,8 @@ uniform PointLight pointLights[POINT_LIGHTS_NUM];
 
 uniform Material material;
 
+uniform vec3 stencilColor;
+
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
@@ -46,7 +48,7 @@ void main()
     for(int i = 0; i < POINT_LIGHTS_NUM; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
     
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0) * vec4(stencilColor, 1.0);
 } 
 
 // calculates the color when using a directional light.

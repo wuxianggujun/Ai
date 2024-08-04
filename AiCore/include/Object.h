@@ -327,6 +327,8 @@ namespace Ai
 
 		// Light source.
 		std::shared_ptr<PointLight> m_lightSource;
+
+		bool m_selected;
 	public:
 		AiQuadLM() = delete;
 
@@ -337,8 +339,9 @@ namespace Ai
 
 		void setLightingMaps(std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular);
 
-		virtual void draw() override;
+		void changeSelectedState();
 
+		virtual void draw() override;
 	private:
 		virtual void init() override;
 
