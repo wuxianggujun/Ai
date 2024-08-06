@@ -17,24 +17,19 @@ set(AI_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 file(MAKE_DIRECTORY ${AI_BINARY_DIR})
 
 add_subdirectory(dependencies)
-add_subdirectory(core)
+add_subdirectory(AiCore)
 
-# 根据BUILD_SIMPLE变量的值来决定是添加SayHello子项目还是创建可执行文件
-if (BUILD_SIMPLE)
-    add_subdirectory(SayHello)
-else ()
-    # 确保main.cpp存在于项目的根目录下
-    add_executable(${PROJECT_NAME} main.cpp)
-    # 链接core库，假设core是一个库
-    target_link_libraries(${PROJECT_NAME} PRIVATE core)
+# 确保main.cpp存在于项目的根目录下
+add_executable(${PROJECT_NAME} main.cpp)
+# 链接core库，假设core是一个库
+target_link_libraries(${PROJECT_NAME} PRIVATE AiCore)
 
-    # 复制整个资源目录，包括其内部的所有子目录和文件
-    add_custom_command(
-            TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${AI_SOURCE_DIR}"
-            "${AI_BINARY_DIR}"
-            COMMENT "Copying resources directory to binary directory"
-    )
-endif ()
+# 复制整个资源目录，包括其内部的所有子目录和文件
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${AI_SOURCE_DIR}"
+        "${AI_BINARY_DIR}"
+        COMMENT "Copying resources directory to binary directory"
+)
 

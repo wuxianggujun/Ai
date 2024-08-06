@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(core)
+project(AiCore)
 
 file(GLOB_RECURSE CORE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*)
 file(GLOB_RECURSE CORE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h*)
