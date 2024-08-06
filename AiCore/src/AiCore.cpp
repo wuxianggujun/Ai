@@ -457,8 +457,6 @@ namespace Ai
 
         ShaderMap["Polygon"] = shaderProgram;
 
-        tinyobj::ObjReader reader;
-
 	}
 
     void addLine(unsigned int id, float startPointX, float startPointY, float endPointX, float endPointY) 

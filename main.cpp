@@ -90,6 +90,8 @@ int main()
 	auto aziModel = Ai::addModelObj("resources/models/azi/azi.obj", azibaoShader);
 	auto& scaleAzibao = aziModel->getScale();
 	scaleAzibao *= 0.05;
+	auto& posAzibao = aziModel->getTranslate();
+	posAzibao.z = 0.5f;
 	
 
 	// RenderLoop

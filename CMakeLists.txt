@@ -3,13 +3,12 @@
 #
 cmake_minimum_required(VERSION 3.8)
 
-project(AI)
+project(Ai)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # ON 就是SayHello 需要重置cmake缓存
-option(BUILD_SIMPLE "Build the simple version" OFF)
 set(AI_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
 set(AI_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
