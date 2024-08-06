@@ -1,0 +1,182 @@
+# Blender 3.6.2 MTL File: 'None'
+# www.blender.org
+
+newmtl Do-tooth
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd tex/T_azi_face_col.png
+map_d tex/T_azi_face_col.png
+
+newmtl M_azi_body
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd tex/T_azi_body_col.png
+map_d tex/T_azi_body_col.png
+
+newmtl M_azi_eye
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd tex/T_azi_eye_col.png
+map_d tex/T_azi_eye_col.png
+
+newmtl M_azi_eye+
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd tex/T_azi_eye_col.png
+map_d tex/T_azi_eye_col.png
+
+newmtl M_azi_eye++
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd tex/T_azi_eye_col.png
+map_d  tex/T_azi_eye_col.png
+
+newmtl M_azi_face
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl M_azi_face+
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl M_azi_face++
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl M_azi_hair
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_hair_col.png
+map_d  tex/T_azi_hair_col.png
+
+newmtl M_azi_props
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_props_col.png
+map_d  tex/T_azi_props_col.png
+
+newmtl M_azi_shoes
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_shoes_col.png
+map_d  tex/T_azi_shoes_col.png
+
+newmtl M_azi_suit
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_suit_col.png
+map_d  tex/T_azi_suit_col.png
+
+newmtl M_azi_suit_Alpha
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_suit_col.png
+map_d  tex/T_azi_suit_col.png
+
+newmtl Up-tooth
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl eye-B
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl eye-B1
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl os
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png
+
+newmtl tongue
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd  tex/T_azi_face_col.png
+map_d  tex/T_azi_face_col.png

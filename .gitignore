@@ -34,3 +34,4 @@
 # Folder
 out/
 .vs/
+./cmake-build-*/

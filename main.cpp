@@ -6,9 +6,9 @@
 
 #include <thread>
 
-//#include <assimp/Importer.hpp>
-//#include <assimp/scene.h>
-//#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj) 
 {
@@ -43,8 +43,6 @@ int main()
 	auto& position = lightSource->getTranslate();
 	position = lightSorcePosition;
 	lightSource->setColor(1.0f, 1.0f, 1.0f);
-
-	//for(int i = 0; i < Ai::g_pointLights.)
 
 	// Demo3
 	std::shared_ptr<Shader> basicShader = std::make_shared<Shader>("resources/shaders/01.basicShader.vs", 
@@ -85,6 +83,14 @@ int main()
 	auto& pl3 = Ai::getPointLight(3);
 	pl3.m_position = { -1.5f, 0.5f, 1.0f };
 	pl3.m_color = { 0.0f, 0.0f, 1.0f };
+
+	// Demo5 
+	std::shared_ptr<Shader> azibaoShader = std::make_shared<Shader>("resources/shaders/03.azibaoShader.vs",
+		"resources/shaders/03.azibaoShader.fs");
+	auto aziModel = Ai::addModelObj("resources/models/azi/azi.obj", azibaoShader);
+	auto& scaleAzibao = aziModel->getScale();
+	scaleAzibao *= 0.05;
+	
 
 	// RenderLoop
 	Ai::renderAi();

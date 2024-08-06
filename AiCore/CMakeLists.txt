@@ -6,16 +6,19 @@ file(GLOB_RECURSE CORE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h*)
 
 add_library(${PROJECT_NAME} STATIC ${CORE_SOURCES} ${CORE_INCLUDES})
 
-target_sources(${PROJECT_NAME} PRIVATE ../dependencies/stb/stb_image.h)
+target_sources(${PROJECT_NAME} PRIVATE ../dependencies/stb/stb_image.h )
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
         "../dependencies/glad/include"
         "../dependencies/glfw/include"
+        "../dependencies/assimp/include"
+        "${CMAKE_BINARY_DIR}/dependencies/assimp/include"
         "../dependencies/glm/"
         "../dependencies/stb")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE INTERFACE
         glm
         glfw
         glad
+        assimp::assimp
         opengl32.lib)

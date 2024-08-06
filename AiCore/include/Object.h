@@ -4,15 +4,20 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <iostream>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 #include <Texture.h>
 #include <Shader.h>
 #include <Camera.h>
-#include <iostream>
+#include <Mesh.h>
 
 namespace Ai 
 {
@@ -88,10 +93,7 @@ namespace Ai
 
 		}
 
-		virtual ~AiObject() 
-		{
-
-		}
+		virtual ~AiObject();
 
 		unsigned int getObjectId();
 
@@ -359,6 +361,41 @@ namespace Ai
 			0, 1, 3, // first triangle
 			1, 2, 3  // second triangle
 		};
+	};
+
+	class ModelObj : public AiObject
+	{
+	public:
+		// model data 
+		std::vector<Texture> textures_loaded;
+		std::vector<Mesh>    meshes;
+
+		std::shared_ptr<Shader> m_shader;
+
+		std::string directory;
+		bool gammaCorrection;
+
+		ModelObj(std::string const& path, std::shared_ptr<Shader> shader, unsigned id = 0, bool gamma = false) 
+			:m_shader(shader), AiObject(id), gammaCorrection(gamma)
+		{
+			loadModel(path);
+		}
+
+		void draw() override;
+	private:
+		virtual void init() override
+		{
+			// Do nothing.
+		}
+
+		void loadModel(std::string path);
+
+		void processNode(aiNode* node, const aiScene* scene);
+
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+
+		std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
+			std::string typeName);
 	};
 }
 #endif

@@ -99,6 +99,8 @@ namespace Ai
     std::map<std::string, unsigned int> ShaderMap;
     // Point light container.
     std::vector<PointLight> PointLights;
+    // temp
+    std::vector<std::shared_ptr<ModelObj>> Models;
 
     void renderAiInit() 
     {
@@ -230,6 +232,11 @@ namespace Ai
                     RenderObjectVector[i]->getView() = view;
                     RenderObjectVector[i]->getProjection() = projection;
                     RenderObjectVector[i]->draw();
+                }
+
+                for (auto model : Models)
+                {
+                    //model->Draw();
                 }
 
                 glDisable(GL_DEPTH_TEST);
@@ -520,6 +527,13 @@ namespace Ai
         std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular)
     {
         std::shared_ptr<AiQuadLM> sp = std::make_shared<AiQuadLM>(id, shader, lightPoint, diffuse, specular);
+        RenderObjectVector.push_back(sp);
+        return sp;
+    }
+
+    std::shared_ptr<ModelObj> addModelObj(std::string path, std::shared_ptr<Shader> shader)
+    {
+        std::shared_ptr<ModelObj> sp = std::make_shared<ModelObj>(path, shader);
         RenderObjectVector.push_back(sp);
         return sp;
     }
