@@ -1,11 +1,24 @@
-add_library(AiCore "src/AiCore.cpp" "src/Painter.cpp"    "include/Shader.h" "include/Texture.h"   "include/Object.h" "src/Object.cpp" "include/Camera.h" "include/Mesh.h" "src/Mesh.cpp")
+cmake_minimum_required(VERSION 3.10)
+project(AiCore)
 
-#AiCore
-include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
+file(GLOB_RECURSE CORE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*)
+file(GLOB_RECURSE CORE_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h*)
 
-# ...
-target_link_libraries(AiCore PRIVATE 
-					  glfw
-					  glad
-					  opengl32.lib
-					  )
+add_library(${PROJECT_NAME} STATIC ${CORE_SOURCES} ${CORE_INCLUDES})
+
+target_sources(${PROJECT_NAME} PRIVATE ../dependencies/stb/stb_image.h )
+
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "../dependencies/glad/include"
+        "../dependencies/glfw/include"
+        "../dependencies/assimp/include"
+        "${CMAKE_BINARY_DIR}/dependencies/assimp/include"
+        "../dependencies/glm/"
+        "../dependencies/stb")
+
+target_link_libraries(${PROJECT_NAME} PRIVATE INTERFACE
+        glm
+        glfw
+        glad
+        assimp::assimp
+        opengl32.lib)
