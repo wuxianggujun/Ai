@@ -1,58 +1,40 @@
 ﻿# CMakeList.txt: 顶层 CMake 项目文件，在此处执行全局配置
 # 并包含子项目。
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required(VERSION 3.8)
 
-project ("Ai")
+project(AI)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-#AiCore
-include_directories("${PROJECT_SOURCE_DIR}/AiCore/include")
-#Config glfw
-option(GLFW_BUILD_DOCS OFF)
-option(GLFW_BUILD_EXAMPLES OFF)
-option(GLFW_BUILD_TESTS OFF)
-add_subdirectory(3rd_party/glfw)
-include_directories(3rd_party/glfw/include)
-LIST(APPEND LIBS glfw ${GLFW_LIBRARIES})
-#Config glad
-include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glad/include")
-#Config glm
-include_directories("${PROJECT_SOURCE_DIR}/3rd_party/glm")
-#Config stb_image
-include_directories("${PROJECT_SOURCE_DIR}/3rd_party/stb")
-#Config assimp
-# option(BUILD_SHARED_LIBS OFF)
-# add_subdirectory(3rd_party/assimp)
-# include_directories(3rd_party/assimp/include)
+# ON 就是SayHello 需要重置cmake缓存
+option(BUILD_SIMPLE "Build the simple version" OFF)
+set(AI_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
+set(AI_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/resources")
 
+# 确保目标资源目录存在
+file(MAKE_DIRECTORY ${AI_BINARY_DIR})
 
-set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-set(TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}")
-file(COPY ${SOURCE_DIR} DESTINATION ${TARGET_DIR})
+add_subdirectory(dependencies)
+add_subdirectory(core)
 
-# 将源代码添加到此项目的可执行文件。
-add_executable (Ai "main.cpp" "AiCore/src/AiCore.cpp")
+# 根据BUILD_SIMPLE变量的值来决定是添加SayHello子项目还是创建可执行文件
+if (BUILD_SIMPLE)
+    add_subdirectory(SayHello)
+else ()
+    # 确保main.cpp存在于项目的根目录下
+    add_executable(${PROJECT_NAME} main.cpp)
+    # 链接core库，假设core是一个库
+    target_link_libraries(${PROJECT_NAME} PRIVATE core)
 
-target_include_directories(Ai PUBLIC
-                          "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/Include"
-                          )
-
-target_link_directories(Ai PRIVATE
-						"${PROJECT_SOURCE_DIR}/Libs"
-						)
-
-add_subdirectory("3rd_party/glad")
-add_subdirectory("SayHello")
-add_subdirectory("AiCore")
-
-target_link_libraries(Ai PRIVATE 
-					  glfw
-					  glad
-					  opengl32.lib
-					  AiCore
-					  )
+    # 复制整个资源目录，包括其内部的所有子目录和文件
+    add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${AI_SOURCE_DIR}"
+            "${AI_BINARY_DIR}"
+            COMMENT "Copying resources directory to binary directory"
+    )
+endif ()
 
