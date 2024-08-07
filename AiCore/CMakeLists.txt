@@ -22,3 +22,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE INTERFACE
         glad
         assimp::assimp
         opengl32.lib)
+
+target_compile_options(${PROJECT_NAME} PRIVATE /W3)
