@@ -87,6 +87,9 @@ int main()
 	// Demo5 
 	std::shared_ptr<Shader> azibaoShader = std::make_shared<Shader>("resources/shaders/03.azibaoShader.vs",
 		"resources/shaders/03.azibaoShader.fs");
+	// Gooch Shading
+	//std::shared_ptr<Shader> azibaoShader = std::make_shared<Shader>("resources/shaders/Azibao/GoochShading.vs",
+	//	"resources/shaders/Azibao/GoochShading.fs");
 	auto aziModel = Ai::addModelObj("resources/models/azi/azi.obj", azibaoShader);
 	auto& scaleAzibao = aziModel->getScale();
 	scaleAzibao *= 0.05;
@@ -94,7 +97,6 @@ int main()
 	posAzibao.z = 0.5f;
 	posAzibao.y = -0.5f;
 	
-
 	// RenderLoop
 	Ai::renderAi();
 

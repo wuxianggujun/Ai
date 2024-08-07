@@ -565,6 +565,8 @@ namespace Ai {
 		m_shader->setMat4("model", model);
 		m_shader->setMat4("view", m_view);
 		m_shader->setMat4("projection", m_projection);
+		//m_shader->setVec3("dirLight.direction", g_dirLight.m_direction);
+		//m_shader->setVec3("dirLight.color", g_dirLight.m_color);
 
 		for (unsigned int i = 0; i < meshes.size(); i++)
 			meshes[i].Draw(m_shader);
