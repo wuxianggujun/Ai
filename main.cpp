@@ -92,6 +92,7 @@ int main()
 	scaleAzibao *= 0.05;
 	auto& posAzibao = aziModel->getTranslate();
 	posAzibao.z = 0.5f;
+	posAzibao.y = -0.5f;
 	
 
 	// RenderLoop
