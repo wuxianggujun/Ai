@@ -100,7 +100,7 @@ namespace Ai
     // Point light container.
     std::vector<PointLight> PointLights;
     // Transparent Object container
-    std::vector<std::shared_ptr<ModelObj>> Models;
+    std::vector<std::shared_ptr<TranslucentAiObject>> TransparencyContainer;
 
     void renderAiInit() 
     {
@@ -226,18 +226,24 @@ namespace Ai
                 int vertexPosLocation;
                 int vertexColorLocation;
                 glEnable(GL_DEPTH_TEST);
+
+                // TODO::Change to Range-Based For.
                 for (int i = 0; i < RenderObjectVector.size(); i++) 
                 {
-                    glm::mat4& tmp = RenderObjectVector[i]->getView();
                     RenderObjectVector[i]->getView() = view;
                     RenderObjectVector[i]->getProjection() = projection;
                     RenderObjectVector[i]->draw();
                 }
 
-                for (auto model : Models)
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                for (auto transparency : TransparencyContainer)
                 {
-                    //model->Draw();
+                    transparency->getView() = view;
+                    transparency->getProjection() = projection;
+                    transparency->draw();
                 }
+                glDisable(GL_BLEND);
 
                 glDisable(GL_DEPTH_TEST);
                 for (int i = 0; i < RenderPainterVector.size(); i++) 
@@ -533,6 +539,13 @@ namespace Ai
     {
         std::shared_ptr<ModelObj> sp = std::make_shared<ModelObj>(path, shader);
         RenderObjectVector.push_back(sp);
+        return sp;
+    }
+
+    std::shared_ptr<TranslucentAiQuad> addTranslucentAiQuad(std::shared_ptr<Shader> shader)
+    {
+        std::shared_ptr<TranslucentAiQuad> sp = std::make_shared<TranslucentAiQuad>(shader);
+        TransparencyContainer.push_back(sp);
         return sp;
     }
 

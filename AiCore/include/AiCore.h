@@ -59,6 +59,8 @@ namespace Ai
 
 	std::shared_ptr<ModelObj> addModelObj(std::string path, std::shared_ptr<Shader> shader);
 
+	std::shared_ptr<TranslucentAiQuad> addTranslucentAiQuad(std::shared_ptr<Shader> shader);
+
 	void processInput(GLFWwindow* window);
 
 	void mouse_callback(GLFWwindow* window, double xpos, double ypos);

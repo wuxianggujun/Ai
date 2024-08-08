@@ -351,7 +351,7 @@ namespace Ai {
 
 		// Bind m_VAO.
 		glBindVertexArray(m_VAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
 
 	// TODO::Simplify initialization function.
@@ -442,7 +442,6 @@ namespace Ai {
 			std::string pointLightQuadratic = shaderAttributeName + "quadratic";
 			m_shader->setFloat(pointLightQuadratic.c_str(), g_pointLights[i].m_quadratic);
 		}
-		m_shader->setFloat("pointLigthNum", g_pointLights.size());
 
 		m_shader->setInt("material.diffuse", 0);
 		m_shader->setInt("material.specular", 1);
@@ -693,6 +692,107 @@ namespace Ai {
 			}
 		}
 		return textures;
+	}
+	// ====================================================================================================
+
+	// ----------------------------------------------------------------------------------------------------
+	// Class TranslucentAiQuad
+	TranslucentAiQuad::TranslucentAiQuad(std::shared_ptr<Shader> shader):
+		m_shader(shader),
+		m_material{ {0.25f, 0.21f, 0.21f}, {0.5f, 0.5f, 0.5f}, {0.3f, 0.3f, 0.3f}, 1 / 0.088f },
+		m_alpha(0.75f)
+	{
+		init();
+	}
+
+	TranslucentAiQuad::~TranslucentAiQuad()
+	{
+
+	}
+
+	void TranslucentAiQuad::draw()
+	{
+		// Use shader.
+		m_shader->use();
+
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, m_translate);
+		model = glm::rotate(model, glm::radians(m_rotate.x), glm::vec3(1.0, 0.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.y), glm::vec3(0.0, 1.0, 0.0));
+		model = glm::rotate(model, glm::radians(m_rotate.z), glm::vec3(0.0, 0.0, 1.0));
+		model = glm::scale(model, m_scale);
+		m_shader->setMat4("model", model);
+		m_shader->setMat4("view", m_view);
+		m_shader->setMat4("projection", m_projection);
+
+		m_shader->setVec3("viewPos", camera.Position);
+		// Set Directional Light
+		m_shader->setVec3("dirLight.direction", g_dirLight.m_direction);
+		m_shader->setVec3("dirLight.color", g_dirLight.m_color);
+		// Set Point Lights.
+		for (int i = 0; i < g_pointLights.size(); i++)
+		{
+			std::string shaderAttributeName = "pointLights[";
+			shaderAttributeName += std::to_string(i);
+			shaderAttributeName += "].";
+
+			std::string pointLightPosition = shaderAttributeName + "position";
+			m_shader->setVec3(pointLightPosition.c_str(), g_pointLights[i].m_position);
+			std::string pointLightColor = shaderAttributeName + "color";
+			m_shader->setVec3(pointLightColor.c_str(), g_pointLights[i].m_color);
+			std::string pointLightConstant = shaderAttributeName + "constant";
+			m_shader->setFloat(pointLightConstant.c_str(), g_pointLights[i].m_constant);
+			std::string pointLightLinear = shaderAttributeName + "linear";
+			m_shader->setFloat(pointLightLinear.c_str(), g_pointLights[i].m_linear);
+			std::string pointLightQuadratic = shaderAttributeName + "quadratic";
+			m_shader->setFloat(pointLightQuadratic.c_str(), g_pointLights[i].m_quadratic);
+		}
+
+		m_shader->setVec3("material.ambient", m_material.ambient);
+		m_shader->setVec3("material.diffuse", m_material.diffuse);
+		m_shader->setVec3("material.specular", m_material.specular);
+		m_shader->setFloat("material.shininess", 32.0f);
+		m_shader->setFloat("alpha", m_alpha);
+
+		glBindVertexArray(m_VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void TranslucentAiQuad::updateDistance()
+	{
+		double squareDistance;
+		double squareX = (camera.Position.x - m_translate.x) * (camera.Position.x - m_translate.x);
+		double squareY = (camera.Position.y - m_translate.y) * (camera.Position.y - m_translate.y);
+		double squareZ = (camera.Position.z - m_translate.z) * (camera.Position.z - m_translate.z);
+		squareDistance = squareX + squareY + squareZ;
+		
+		double distance = sqrt(squareDistance);
+		m_distance = distance;
+	}
+
+	double TranslucentAiQuad::getDistance()
+	{
+		return m_distance;
+	}
+
+	void TranslucentAiQuad::init()
+	{
+		glGenVertexArrays(1, &m_VAO);
+		glGenBuffers(1, &m_VBO);
+		glGenBuffers(1, &m_EBO);
+		glBindVertexArray(m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
 	}
 	// ====================================================================================================
 }

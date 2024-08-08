@@ -6,6 +6,8 @@
 #include <memory>
 #include <iostream>
 
+#include <cmath>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -299,6 +301,7 @@ namespace Ai
 	private:
 		virtual void init() override;
 	private:
+		// TODO::Replace Array with Vector. 
 		static constexpr float m_vertices[24] =
 		{
 			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// top right
@@ -399,13 +402,49 @@ namespace Ai
 	{
 	protected:
 		// The distance to camera.
-		float m_distance;
+		double m_distance;
 	public:
 		virtual void updateDistance() = 0;
+
+		virtual double getDistance() = 0;
 	};
 
 	class TranslucentAiQuad : public TranslucentAiObject
 	{
+	private:
+		std::shared_ptr<Shader> m_shader;
+
+		Material m_material;
+		float m_alpha;
+	public:
+		TranslucentAiQuad() = delete;
+
+		TranslucentAiQuad(std::shared_ptr<Shader> shader);
+
+		~TranslucentAiQuad();
+
+		virtual void draw() override;
+
+		virtual void updateDistance() override;
+
+		virtual double getDistance() override;
+	private:
+		virtual void init() override;
+	private:
+		// TODO::Replace float number with struct.
+		static constexpr float m_vertices[24] =
+		{
+			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// top right
+			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// bottom right
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,	// bottom left
+			-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f	// top left 
+		};
+
+		static constexpr unsigned int m_indices[6] =
+		{
+			0, 1, 3, // first triangle
+			1, 2, 3  // second triangle
+		};
 
 	};
 }

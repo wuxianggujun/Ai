@@ -97,6 +97,13 @@ int main()
 	//posAzibao.z = 0.5f;
 	//posAzibao.y = -0.5f;
 	
+	// Demo 6 => Render Transparency.
+	std::shared_ptr<Shader> transparencyShader = std::make_shared<Shader>("resources/shaders/common/pure/transparency.vs", 
+		"resources/shaders/common/pure/transparency.fs");
+	auto transparencyObject = Ai::addTranslucentAiQuad(transparencyShader);
+	auto& transparencyObjPos = transparencyObject->getTranslate();
+	transparencyObjPos = glm::vec3(-1.5f, 0.1f, 0.1f);
+
 	// RenderLoop
 	Ai::renderAi();
 
