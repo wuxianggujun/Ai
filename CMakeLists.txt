@@ -23,12 +23,13 @@ add_executable(${PROJECT_NAME} main.cpp)
 # 链接core库，假设core是一个库
 target_link_libraries(${PROJECT_NAME} PRIVATE AiCore)
 
-# 复制整个资源目录，包括其内部的所有子目录和文件
-add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
+# 定义一个自定义目标，每次构建时拷贝资源目录
+add_custom_target(copy_resources ALL
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${AI_SOURCE_DIR}"
         "${AI_BINARY_DIR}"
         COMMENT "Copying resources directory to binary directory"
 )
 
+# 确保在生成目标之前先执行资源拷贝
+add_dependencies(${PROJECT_NAME} copy_resources)
