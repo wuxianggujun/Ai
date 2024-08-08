@@ -99,7 +99,7 @@ namespace Ai
     std::map<std::string, unsigned int> ShaderMap;
     // Point light container.
     std::vector<PointLight> PointLights;
-    // temp
+    // Transparent Object container
     std::vector<std::shared_ptr<ModelObj>> Models;
 
     void renderAiInit() 

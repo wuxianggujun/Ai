@@ -64,6 +64,10 @@ namespace Ai
 		unsigned int m_objectId;
 		std::string m_objectName;
 	protected:
+		unsigned int m_VAO;
+		unsigned int m_VBO;
+		unsigned int m_EBO;
+
 		glm::vec3 m_translate;
 		glm::vec3 m_rotate;
 		glm::vec3 m_scale;
@@ -71,7 +75,15 @@ namespace Ai
 		glm::mat4 m_view;
 		glm::mat4 m_projection;
 	public:
-		AiObject() = delete;
+		AiObject():
+			m_objectId(0),
+			m_objectName(""),
+			m_translate(0.0f),
+			m_rotate(0.0f),
+			m_scale(1.0f)
+		{
+
+		}
 
 		AiObject(unsigned int id, std::string name): 
 			m_objectId(id), 
@@ -117,10 +129,6 @@ namespace Ai
 	class AiTexQuadObject : public AiObject 
 	{
 	private:
-		unsigned int m_VAO;
-		unsigned int m_VBO;
-		unsigned int m_EBO;
-
 		static unsigned int m_shaderID;
 		// If m_shaderIsGenerated is ture, means shader has been generated.
 		// Else, shader should be generated first.
@@ -182,10 +190,6 @@ namespace Ai
 
 	class AiPureCubeObject : public AiObject {
 	private:
-		unsigned int m_VAO;
-		unsigned int m_VBO;
-		unsigned int m_EBO;
-
 		static unsigned int m_shaderID;
 		// If m_shaderIsGenerated is ture, means shader has been generated.
 		// Else, shader should be generated first.
@@ -275,10 +279,6 @@ namespace Ai
 	class AiQuad : public AiObject
 	{
 	private:
-		unsigned int m_VAO;
-		unsigned int m_VBO;
-		unsigned int m_EBO;
-
 		std::shared_ptr<Shader> m_shader;
 
 		// Object Material.
@@ -318,10 +318,6 @@ namespace Ai
 	class AiQuadLM : public AiObject
 	{
 	private:
-		unsigned int m_VAO;
-		unsigned int m_VBO;
-		unsigned int m_EBO;
-
 		std::shared_ptr<Shader> m_shader;
 
 		std::shared_ptr<Texture2D> m_diffuse;
@@ -396,6 +392,21 @@ namespace Ai
 
 		std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
 			std::string typeName);
+	};
+
+	// Transparent object pure virtual base class
+	class TranslucentAiObject : public AiObject
+	{
+	protected:
+		// The distance to camera.
+		float m_distance;
+	public:
+		virtual void updateDistance() = 0;
+	};
+
+	class TranslucentAiQuad : public TranslucentAiObject
+	{
+
 	};
 }
 #endif
