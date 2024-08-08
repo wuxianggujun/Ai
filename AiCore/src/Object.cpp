@@ -44,7 +44,9 @@ namespace Ai {
 
 	AiObject::~AiObject()
 	{
-
+		glDeleteVertexArrays(1, &m_VAO);
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_EBO);
 	}
 
 	std::string AiObject::getObjectName() 
@@ -98,9 +100,7 @@ namespace Ai {
 
 	AiTexQuadObject::~AiTexQuadObject()
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
+
 	}
 
 	void AiTexQuadObject::init() 
@@ -212,9 +212,7 @@ namespace Ai {
 
 	AiPureCubeObject::~AiPureCubeObject()
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
+
 	}
 
 	void AiPureCubeObject::draw()
@@ -318,9 +316,7 @@ namespace Ai {
 
 	AiQuad::~AiQuad()
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
+
 	}
 
 	void AiQuad::setMaterail(Material& material)
@@ -394,9 +390,7 @@ namespace Ai {
 
 	AiQuadLM::~AiQuadLM() 
 	{
-		glDeleteVertexArrays(1, &m_VAO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_EBO);
+
 	}
 
 	void AiQuadLM::setLightingMaps(std::shared_ptr<Texture2D> diffuse, std::shared_ptr<Texture2D> specular)
