@@ -239,9 +239,17 @@ namespace Ai
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 for (auto transparency : TransparencyContainer)
                 {
+                    // TODO::Two pass transparency rendering, one for back face and one for front face.
+                    glEnable(GL_CULL_FACE);
+                    // Set front face surround order.
+                    // CCW means Conuterclockwise, and CW means Clockwise.
+                    glFrontFace(GL_CW);
+                    // Select culling face.
+                    glCullFace(GL_BACK);
                     transparency->getView() = view;
                     transparency->getProjection() = projection;
                     transparency->draw();
+                    glDisable(GL_CULL_FACE);
                 }
                 glDisable(GL_BLEND);
 
