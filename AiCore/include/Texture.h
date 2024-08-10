@@ -4,11 +4,15 @@
 
 #include <stb_image.h>
 #include <glad/glad.h>
-#include <cstring> 
-#include <string>
+
 #include <iostream>
 
-class Texture2D {
+#include <cstring> 
+#include <string>
+#include <vector>
+
+class Texture2D 
+{
 private:
 	unsigned int m_textureId;
 	int m_warpS = GL_REPEAT;
@@ -62,4 +66,23 @@ public:
 		glDeleteTextures(1, &m_textureId);
 	}
 };
+namespace Ai
+{
+	class SkyBoxTexture
+	{
+	private:
+		unsigned int m_textureId;
+
+		std::string m_filepath;
+
+		static std::vector<std::string> m_faces;
+	public:
+		SkyBoxTexture() = delete;
+
+		SkyBoxTexture(std::string filepath);
+
+		void init();
+	};
+}
+
 #endif

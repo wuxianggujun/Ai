@@ -39,6 +39,7 @@ namespace Ai
     PainterObject g_triangle;
     PainterObject g_square;
     PainterObject g_circle;
+
     
     float lineVertices[6] = { 1.0f };
 
@@ -176,18 +177,11 @@ namespace Ai
         addLineShader();
         addPolygonShader();
 
-        // TODO::...
-        //g_pointLights.push_back({ { -1.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 1.0f, 0.09f, 0.032f });
         for (int i = 0; i < 10; i++)
         {
             g_pointLights.push_back({ {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 1.0f, 0.09f, 0.032f });
         }
-
-        //tinyobj::ObjReader reader;
     }
-
-
-
 
     void renderAi()
     {
@@ -232,6 +226,9 @@ namespace Ai
                 lightSource->setColor(color.r, color.g, color.b);
             }
         }
+
+        // SkyBox
+        SkyBoxTexture("resources/textures/skybox/default");
 
         // framebuffer configuration
         // -------------------------
@@ -389,6 +386,7 @@ namespace Ai
                 }
             }
 
+            // Render off - screen framebuffer.
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glDisable(GL_DEPTH_TEST);
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
