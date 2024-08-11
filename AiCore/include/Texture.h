@@ -82,6 +82,8 @@ namespace Ai
 		SkyBoxTexture(std::string filepath);
 
 		void init();
+
+		unsigned int getTextureId();
 	};
 }
 

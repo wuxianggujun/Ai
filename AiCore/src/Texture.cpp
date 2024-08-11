@@ -26,6 +26,8 @@ namespace Ai
 		int width, height, nrChannels;
 		unsigned char* data;
 
+		stbi_set_flip_vertically_on_load(false);
+
 		for (unsigned int i = 0; i < m_faces.size(); i++)
 		{
 			// Concat image filepath.
@@ -59,5 +61,10 @@ namespace Ai
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	}
+
+	unsigned int SkyBoxTexture::getTextureId()
+	{
+		return m_textureId;
 	}
 }

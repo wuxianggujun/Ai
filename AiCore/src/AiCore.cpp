@@ -11,13 +11,14 @@ namespace Ai
     // 1.Directional light
     DirLight g_dirLight = { {-0.2f, -1.0f, -0.3f}, {1.0f, 1.0f, 1.0f} };
     // 2.Point light container
-    //constexpr int maxPointLightNum = 10;
     std::vector<SceneLight> g_pointLights;
 
+    // Rendering window configuration.
     GLFWwindow* window;
     static unsigned int SCR_WIDTH = 1000;
     static unsigned int SCR_HEIGHT = 1000;
     
+    // Camera to generate view transformation matrix.
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     float lastX = SCR_WIDTH / 2.0f;
     float lastY = SCR_HEIGHT / 2.0f;
@@ -39,7 +40,6 @@ namespace Ai
     PainterObject g_triangle;
     PainterObject g_square;
     PainterObject g_circle;
-
     
     float lineVertices[6] = { 1.0f };
 
@@ -64,6 +64,50 @@ namespace Ai
     static float circleVertices[361 * 3] = { 1.0f };
 
     static unsigned int circleElementVertices[360 * 3] = { 0 };
+
+    static float skyboxVertices[] = {      
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };
 
     constexpr double PI = 3.1415926;
 
@@ -228,7 +272,21 @@ namespace Ai
         }
 
         // SkyBox
-        SkyBoxTexture("resources/textures/skybox/default");
+        // skybox VAO
+        unsigned int skyboxVAO, skyboxVBO;
+        glGenVertexArrays(1, &skyboxVAO);
+        glGenBuffers(1, &skyboxVBO);
+        glBindVertexArray(skyboxVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+        Shader skyboxShader("resources/shaders/common/skybox/skybox.vs", "resources/shaders/common/skybox/skybox.fs");
+        skyboxShader.use();
+        skyboxShader.setInt("skybox", 0);
+
+        SkyBoxTexture skyboxTexture("resources/textures/skybox/default");
 
         // framebuffer configuration
         // -------------------------
@@ -268,10 +326,11 @@ namespace Ai
             glm::mat4 view = camera.GetViewMatrix();
 
             // Bind the off-screen framebuffer.
-            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+            //glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
             if (RenderPainterVector.size() != 0 || RenderObjectVector.size() != 0) 
             {
                 int vertexScaleLocation;
@@ -386,17 +445,31 @@ namespace Ai
                 }
             }
 
-            // Render off - screen framebuffer.
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDisable(GL_DEPTH_TEST);
-            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            screenShader.use();
-            glBindVertexArray(quadVAO);
+            // skybox cube
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+            skyboxShader.use();
+            view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+            skyboxShader.setMat4("view", view);
+            skyboxShader.setMat4("projection", projection);
+            glBindVertexArray(skyboxVAO);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture.getTextureId());
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
+            glDepthFunc(GL_LESS);
+
+            // Render off - screen framebuffer.
+            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //glDisable(GL_DEPTH_TEST);
+            //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+            //glClear(GL_COLOR_BUFFER_BIT);
+
+            //screenShader.use();
+            //glBindVertexArray(quadVAO);
+            //glActiveTexture(GL_TEXTURE0);
+            //glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
