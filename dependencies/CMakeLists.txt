@@ -13,9 +13,14 @@ set(GLM_ENABLE_CXX_20 TRUE CACHE INTERNAL "")
 set(GLM_DISABLE_AUTO_DETECTION TRUE CACHE INTERNAL "")
 set(GLM_QUIET TRUE CACHE INTERNAL "")
 
+# imgui
+set(IMGUI_STATIC_LIBRARY TRUE)
+
 # 添加子项目
 add_subdirectory(glad)
 add_subdirectory(glfw)
 add_subdirectory(glm/glm)
 add_subdirectory(assimp)
+add_subdirectory(freetype)
+add_subdirectory(imgui)
 
