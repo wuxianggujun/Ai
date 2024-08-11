@@ -7,6 +7,10 @@
 
 namespace Ai 
 {
+    // --------------------------------------------------
+    // Rendering Engine configuration.
+    AiEngineConfig g_AiEngineConfig;
+        
     // Global light source
     // 1.Directional light
     DirLight g_dirLight = { {-0.2f, -1.0f, -0.3f}, {1.0f, 1.0f, 1.0f} };
@@ -147,12 +151,22 @@ namespace Ai
     // Transparent Object container
     std::vector<std::shared_ptr<TranslucentAiObject>> TransparencyContainer;
 
+    AiEngineConfig& getAiEngineConfig()
+    {
+        return g_AiEngineConfig;
+    }
+
     void renderAiInit() 
     {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        if (!g_AiEngineConfig.offScreenRenderingFlag && g_AiEngineConfig.antiAliasing)
+        {
+            glfwWindowHint(GLFW_SAMPLES, 4);
+        }
+        
 
         window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "HelloWindow~", NULL, NULL);
         if (window == NULL)
@@ -229,30 +243,32 @@ namespace Ai
 
     void renderAi()
     {
-        float quadVertices[] = {
-            -1.0f,  1.0f,  0.0f, 1.0f,
-            -1.0f, -1.0f,  0.0f, 0.0f,
-             1.0f, -1.0f,  1.0f, 0.0f,
-
-            -1.0f,  1.0f,  0.0f, 1.0f,
-             1.0f, -1.0f,  1.0f, 0.0f,
-             1.0f,  1.0f,  1.0f, 1.0f
-        };
-
         // screen quad VAO
         unsigned int quadVAO, quadVBO;
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        if (g_AiEngineConfig.offScreenRenderingFlag)
+        {
+            float quadVertices[] = {
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                -1.0f, -1.0f,  0.0f, 0.0f,
+                 1.0f, -1.0f,  1.0f, 0.0f,
 
+                -1.0f,  1.0f,  0.0f, 1.0f,
+                 1.0f, -1.0f,  1.0f, 0.0f,
+                 1.0f,  1.0f,  1.0f, 1.0f
+            };
+
+            glGenVertexArrays(1, &quadVAO);
+            glGenBuffers(1, &quadVBO);
+            glBindVertexArray(quadVAO);
+            glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        }
+        // TODO::Encapsulate the following operations
         Shader screenShader("resources/shaders/common/screen/screenQuad.vs", "resources/shaders/common/screen/screenQuad.fs");
-
         screenShader.use();
         screenShader.setInt("screenTexture", 0);
 
@@ -288,29 +304,68 @@ namespace Ai
 
         SkyBoxTexture skyboxTexture("resources/textures/skybox/default");
 
-        // framebuffer configuration
+        // Off-Screen framebuffer configuration
         // -------------------------
-        unsigned int framebuffer;
-        glGenFramebuffers(1, &framebuffer);
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        // create a color attachment texture
-        unsigned int textureColorbuffer;
-        glGenTextures(1, &textureColorbuffer);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-
+        unsigned int offScreenFramebuffer;
+        unsigned int offScreenTexture;
         unsigned int rbo;
-        glGenRenderbuffers(1, &rbo);
-        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
 
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // configure second post-processing framebuffer
+        unsigned int antialisingFramebuffer;
+        unsigned int screenTexture;
+
+        if (g_AiEngineConfig.offScreenRenderingFlag)
+        {
+            glGenFramebuffers(1, &offScreenFramebuffer);
+            glBindFramebuffer(GL_FRAMEBUFFER, offScreenFramebuffer);
+
+            // create a color attachment texture
+            glGenTextures(1, &offScreenTexture);
+            
+            glGenRenderbuffers(1, &rbo);
+            glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+
+            
+
+            if (g_AiEngineConfig.antiAliasing) 
+            {
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, offScreenTexture);
+                glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, SCR_WIDTH, SCR_HEIGHT, GL_TRUE);
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, offScreenTexture, 0);
+
+                glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+                glGenFramebuffers(1, &antialisingFramebuffer);
+                glBindFramebuffer(GL_FRAMEBUFFER, antialisingFramebuffer);
+                
+                glGenTextures(1, &screenTexture);
+                glBindTexture(GL_TEXTURE_2D, screenTexture);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screenTexture, 0);
+
+            }
+            else
+            {
+                glBindTexture(GL_TEXTURE_2D, offScreenTexture);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, offScreenTexture, 0);
+
+                glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+            }
+
+
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
 
         while (!glfwWindowShouldClose(window))
         {
@@ -326,11 +381,19 @@ namespace Ai
             glm::mat4 view = camera.GetViewMatrix();
 
             // Bind the off-screen framebuffer.
-            //glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+            if (g_AiEngineConfig.offScreenRenderingFlag) 
+            {
+                glBindFramebuffer(GL_FRAMEBUFFER, offScreenFramebuffer);
+            }
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+            if (!g_AiEngineConfig.offScreenRenderingFlag && g_AiEngineConfig.antiAliasing)
+            {
+                glEnable(GL_MULTISAMPLE);
+            }
+            
             if (RenderPainterVector.size() != 0 || RenderObjectVector.size() != 0) 
             {
                 int vertexScaleLocation;
@@ -350,7 +413,8 @@ namespace Ai
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 for (auto transparency : TransparencyContainer)
                 {
-                    // TODO::Two pass transparency rendering, one for back face and one for front face.
+                    // TODO-1::Two pass transparency rendering, one for back face and one for front face.
+                    // TODO-2::Reoreder the transparency container by distance.
                     glEnable(GL_CULL_FACE);
                     // Set front face surround order.
                     // CCW means Conuterclockwise, and CW means Clockwise.
@@ -460,21 +524,38 @@ namespace Ai
             glDepthFunc(GL_LESS);
 
             // Render off - screen framebuffer.
-            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            //glDisable(GL_DEPTH_TEST);
-            //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-            //glClear(GL_COLOR_BUFFER_BIT);
+            if (g_AiEngineConfig.offScreenRenderingFlag)
+            {
+                if (g_AiEngineConfig.antiAliasing)
+                {
+                    glBindFramebuffer(GL_READ_FRAMEBUFFER, offScreenFramebuffer);
+                    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, antialisingFramebuffer);
+                    glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                }
 
-            //screenShader.use();
-            //glBindVertexArray(quadVAO);
-            //glActiveTexture(GL_TEXTURE0);
-            //glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-            //glDrawArrays(GL_TRIANGLES, 0, 6);
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glDisable(GL_DEPTH_TEST);
+                glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+
+                screenShader.use();
+                glBindVertexArray(quadVAO);
+                glActiveTexture(GL_TEXTURE0);
+
+                if (g_AiEngineConfig.antiAliasing)
+                {
+                    glBindTexture(GL_TEXTURE_2D, screenTexture);
+                }
+                else
+                {
+                    glBindTexture(GL_TEXTURE_2D, offScreenTexture);
+                }
+               
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+            }
 
             glfwSwapBuffers(window);
             glfwPollEvents();
-
-            
         }
         glDeleteVertexArrays(1, &g_triangle.VAO);
         glDeleteBuffers(1, &g_triangle.VBO);

@@ -24,6 +24,10 @@ void rotateTex(std::shared_ptr<Ai::AiTexQuadObject> obj)
 
 int main() 
 {
+	auto& engineConfig = Ai::getAiEngineConfig();
+	engineConfig.antiAliasing = true;
+	engineConfig.offScreenRenderingFlag = true;
+
 	Ai::renderAiInit();
 
 	// Demo1
@@ -67,7 +71,7 @@ int main()
 	std::shared_ptr<Shader> lightingMapShader = std::make_shared<Shader>("resources/shaders/02.lightingMap.vs",
 		"resources/shaders/02.lightingMap.fs");
 	auto quadLM = Ai::addAiQuadLM(11, lightingMapShader, sp_pl, diffuseMap, specularMap);
-	quadLM->changeSelectedState();
+	//quadLM->changeSelectedState();
 	auto& quadLMPosition = quadLM->getTranslate();
 	quadLMPosition.x = -1.5f;
 

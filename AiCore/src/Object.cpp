@@ -468,7 +468,7 @@ namespace Ai {
 		{
 			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 			glStencilMask(0x00);
-			glDisable(GL_DEPTH_TEST);
+			//glDisable(GL_DEPTH_TEST);
 			model = glm::scale(model, m_scale * 1.1f);
 			m_shader->setMat4("model", model);
 			m_shader->setVec3("stencilColor", glm::vec3(0.0f, 0.0f, 1.0f));

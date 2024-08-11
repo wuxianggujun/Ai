@@ -23,6 +23,15 @@
 
 namespace Ai 
 {
+	struct AiEngineConfig
+	{
+		// RE Cinfog 1 >> Use off-screen rendering or not.
+		bool offScreenRenderingFlag = false;
+		bool antiAliasing = false;
+	};
+
+	AiEngineConfig& getAiEngineConfig();
+
 	void renderAiInit();
 
 	void renderAi();
